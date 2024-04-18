@@ -294,7 +294,7 @@
           <span class="tooltip">Approve Cuti</span>
         </li>  
         <li>
-          <a href="#">
+          <a href="{{ route('area-manager.approve.barang') }}">
             <i class='bx bx-collection' ></i>
             <span class="links_name">Approve Barang</span>
           </a>

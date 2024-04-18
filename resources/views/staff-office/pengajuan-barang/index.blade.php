@@ -43,6 +43,8 @@
                                     <th>Disetujui Oleh</th>
                                     <th>Diketahui Oleh</th>
                                     <th>Daftar Barang</th>
+                                    <th>Approve Disetujui</th>
+                                    <th>Approve Diketahui</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -62,6 +64,8 @@
                                                 @endforeach
                                             </ul>
                                         </td>
+                                        <td>{{ $pengajuan->setujui }}</td>
+                                        <td>{{ $pengajuan->ketahui }}</td>
                                         <td>
                                             <!-- Tambahkan tautan edit -->
                                             <a href="{{ route('staff-office.pengajuan-barang.edit', $pengajuan->id) }}" class="btn btn-primary btn-sm">Edit</a>

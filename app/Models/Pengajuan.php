@@ -13,6 +13,8 @@ class Pengajuan extends Model
         'dibuat_oleh',
         'disetujui_oleh',
         'diketahui_oleh',
+        'setujui',
+        'ketahui',
     ];
 
     public function dibuatOleh()
@@ -33,5 +35,13 @@ class Pengajuan extends Model
     public function barangs()
     {
         return $this->hasMany(Barang::class);
+    }
+
+    protected $table = 'pengajuans';
+
+    // Definisikan relasi dengan model User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
     }
 }

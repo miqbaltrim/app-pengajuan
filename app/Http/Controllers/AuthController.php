@@ -51,6 +51,9 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
                 break;
 
+            case 'manager-operasional':
+                return redirect()->route('manager-operasional.dashboard');
+                break;
             case 'area-manager':
                 return redirect()->route('area-manager.dashboard');
                 break;

@@ -18,6 +18,11 @@ class ProfileController extends Controller
                 return view('admin.profile');
                 break;
 
+            case 'manager-operasional':
+                // Logika untuk profil admin
+                return view('manager-operasional.profile');
+                break;
+
             case 'area-manager':
                 // Logika untuk profil admin
                 return view('area-manager.profile');
