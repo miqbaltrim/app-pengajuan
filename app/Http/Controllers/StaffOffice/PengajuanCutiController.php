@@ -17,7 +17,7 @@ class PengajuanCutiController extends Controller
     public function index()
     {
         // Mengambil data pengajuan cuti
-        $ajucutis = Ajucuti::all();
+        $ajucutis = Ajucuti::where('id_user', Auth::id())->get();
 
         // Menghitung total cuti yang tersisa untuk pengguna saat ini
         $totalCuti = 12; // Jumlah cuti awal
@@ -37,6 +37,15 @@ class PengajuanCutiController extends Controller
         return view('staff-office.pengajuan-cuti.index', compact('ajucutis', 'totalCuti'));
     }
 
+    public function riwayatDashboard()
+    {
+        // Mengambil semua riwayat cuti dari model Ajucuti
+        $riwayatCuti = Ajucuti::all();
+
+        // Menampilkan view index.blade.php di dalam direktori staff-office/pengajuan-cuti
+        return view('staff-office.dashboard', compact('riwayatCuti'));
+    }
+
     public function create()
     {
         return view('staff-office.pengajuan-cuti.create');
@@ -50,6 +59,30 @@ class PengajuanCutiController extends Controller
             'alasan' => 'required|string',
             'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
         ]);
+
+        // Menghitung total cuti yang tersisa untuk pengguna saat ini
+        $ajucutis = Ajucuti::where('id_user', Auth::id())->get();
+        $totalCuti = 12; // Jumlah cuti awal
+        foreach ($ajucutis as $ajucuti) {
+            // Menghitung jumlah hari cuti yang diambil
+            $mulaiCuti = strtotime($ajucuti->mulai_cuti);
+            $selesaiCuti = strtotime($ajucuti->selesai_cuti);
+            $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+
+            // Mengurangi jumlah cuti yang diambil dari total cuti
+            $totalCuti -= $hariCuti;
+        }
+
+        // Menghitung jumlah hari cuti yang diajukan pada pengajuan ini
+        $mulaiCuti = strtotime($request->mulai_cuti);
+        $selesaiCuti = strtotime($request->selesai_cuti);
+        $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+
+        // Memeriksa apakah pengguna mencoba mengambil cuti melebihi jatahnya
+        if ($totalCuti - $hariCuti < 0) {
+            // Jika ya, kembalikan dengan pesan error
+            return redirect()->back()->with('error', 'Maaf, Anda mencoba mengambil cuti melebihi jatah cuti yang tersisa.');
+        }
 
         // Mengisi model Ajucuti dengan data dari formulir
         $ajucuti = new Ajucuti();
@@ -73,30 +106,51 @@ class PengajuanCutiController extends Controller
         return view('staff-office.pengajuan-cuti.edit', compact('ajucuti'));
     }
 
-    // Function untuk mengupdate data pengajuan cuti
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'mulai_cuti' => 'required|date',
-            'selesai_cuti' => 'required|date',
-            'alasan' => 'required|string',
-            'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
-        ]);
+{
+    $request->validate([
+        'mulai_cuti' => 'required|date',
+        'selesai_cuti' => 'required|date',
+        'alasan' => 'required|string',
+        'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
+    ]);
 
-        // Mengambil data Ajucuti berdasarkan ID
-        $ajucuti = Ajucuti::findOrFail($id);
+    // Mengambil data Ajucuti berdasarkan ID
+    $ajucuti = Ajucuti::findOrFail($id);
 
-        // Mengisi data Ajucuti dengan data dari form
-        $ajucuti->mulai_cuti = $request->mulai_cuti;
-        $ajucuti->selesai_cuti = $request->selesai_cuti;
-        $ajucuti->alasan = $request->alasan;
-        $ajucuti->approved = $request->approved;
-
-        // Menyimpan perubahan
-        $ajucuti->save();
-
-        return redirect()->route('staff-office.pengajuan-cuti.index')->with('success', 'Pengajuan cuti berhasil diperbarui.');
+    // Menghitung total cuti yang tersisa untuk pengguna saat ini
+    $ajucutis = Ajucuti::where('id_user', Auth::id())->get();
+    $totalCuti = 12; // Jumlah cuti awal
+    foreach ($ajucutis as $cuti) {
+        $mulaiCuti = strtotime($cuti->mulai_cuti);
+        $selesaiCuti = strtotime($cuti->selesai_cuti);
+        $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+        $totalCuti -= $hariCuti;
     }
+
+    // Menghitung jumlah hari cuti yang diambil pada update ini
+    $mulaiCuti = strtotime($request->mulai_cuti);
+    $selesaiCuti = strtotime($request->selesai_cuti);
+    $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+
+    // Memeriksa apakah pengguna mencoba mengambil cuti melebihi batas jatah cuti
+    if ($hariCuti > $totalCuti) {
+        return redirect()->back()->with('error', 'Maaf, Anda mencoba mengambil cuti melebihi jatah cuti yang tersisa.');
+    }
+
+    // Mengisi data Ajucuti dengan data dari form
+    $ajucuti->mulai_cuti = $request->mulai_cuti;
+    $ajucuti->selesai_cuti = $request->selesai_cuti;
+    $ajucuti->alasan = $request->alasan;
+    $ajucuti->approved = $request->approved;
+
+    // Menyimpan perubahan
+    $ajucuti->save();
+
+    return redirect()->route('staff-office.pengajuan-cuti.index')->with('success', 'Pengajuan cuti berhasil diperbarui.');
+}
+
+
 
     // Function untuk menghapus data pengajuan cuti
     public function destroy($id)
@@ -183,11 +237,6 @@ class PengajuanCutiController extends Controller
         return back()->with('error', 'Gagal menyimpan file.');
     }
 }
-
-
-
-
-
 
 }
 

@@ -30,14 +30,21 @@
         margin-top: 20px;
     }
 </style>
-<div class="container">
+<<div class="container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title">Formulir Pengajuan Cuti</h5>
+                    <a href="/staff-office/pengajuan-cuti" class="btn btn-danger">Back</a> <!-- Back button -->
                 </div>
                 <div class="card-body">
+                    <!-- Popup untuk pesan error -->
+                    @if(session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                    @endif
                     <form action="{{ route('staff-office.pengajuan-cuti.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">

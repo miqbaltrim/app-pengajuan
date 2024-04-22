@@ -266,33 +266,40 @@
     </div>
     <ul class="nav-list" style="margin-top: auto;">
       <li>
-        <a href="/staff-office/dashboard">
-          <i class='bx bx-sidebar'></i>
+        <a href="/manager-operasional/dashboard">
+          <i class='bx bx-user'></i>
           <span class="links_name">Dashboard</span>
         </a>
         <span class="tooltip">Dashboard</span>
       </li>
       <li>
-        <a href="/staff-office/pengajuan-cuti">
+        <a href="">
           <i class='bx bx-file'></i>
           <span class="links_name">Pengajuan Cuti</span>
         </a>
         <span class="tooltip">Pengajuan Cuti</span>
       </li>
-      <li>
-        <a href="{{ route('staff-office.pengajuan-barang.index') }}">
-          <i class='bx bx-package'></i>
-          <span class="links_name">Data Pengajuan Barang</span>
-        </a>
-        <span class="tooltip">Data Pengajuan Barang</span>
-      </li>
-      {{-- <li>
-        <a href="{{ route('staff-office.pengajuan-kasbon.index') }}">
-          <i class='bx bx-money'></i>
-          <span class="links_name">Data Pengajuan Kasbon</span>
-        </a>
-        <span class="tooltip">Data Pengajuan Kasbon</span>
-      </li> --}}
+        <li>
+          <a href="#">
+            <i class='bx bx-package' ></i>
+            <span class="links_name">Data Pengajuan Barang</span>
+          </a>
+          <span class="tooltip">Data Pengajuan Barang</span>
+        </li>  
+        <li>
+          <a href="{{ route('manager-operasional.approve.cuti') }}">
+            <i class='bx bx-folder-open' ></i>
+            <span class="links_name">Approve Cuti</span>
+          </a>
+          <span class="tooltip">Approve Cuti</span>
+        </li>  
+        <li>
+          <a href="/manager-operasional/approve/barang">
+            <i class='bx bx-collection' ></i>
+            <span class="links_name">Approve Barang</span>
+          </a>
+          <span class="tooltip">Approve Barang</span>
+        </li>  
       <li class="profile">
         <a href="{{ route(Auth::user()->role . '.profile') }}"> <!-- Tambahkan tautan ke halaman profil di sini -->
           <div class="profile-details">

@@ -52,7 +52,6 @@
                     <!-- Tombol "Undo" -->
                     <div class="undo-button">
                         <button type="button" id="undo" class="btn btn-warning">Undo</button>
-                        <a href="/pengajuan" class="btn btn-danger">Back</a>
                     </div>
                     <!-- Formulir untuk menambahkan barang baru -->
                     <form action="{{ route('staff-office.pengajuan-barang.store') }}" method="POST" id="barang-form">

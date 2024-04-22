@@ -1,5 +1,3 @@
-<!-- resources/views/staff-office/pengajuan-cuti/edit.blade.php -->
-
 @extends('layouts.staff-office')
 
 @section('content')
@@ -36,10 +34,17 @@
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Edit Pengajuan Cuti</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title">Formulir Pengajuan Cuti</h5>
+                    <a href="{{ route('staff-office.pengajuan-cuti.index') }}" class="btn btn-danger">Back</a>
                 </div>
                 <div class="card-body">
+                    <!-- Alert untuk menampilkan pesan kesalahan -->
+                    @if(session('error'))
+                        <div class="alert alert-danger" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <form action="{{ route('staff-office.pengajuan-cuti.update', $ajucuti->id) }}" method="POST">
                         @csrf
                         @method('PUT')

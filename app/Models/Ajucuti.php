@@ -18,8 +18,9 @@ class Ajucuti extends Model
         'mulai_cuti',
         'selesai_cuti',
         'alasan',
+        'jml_cuti',
         'status',
-        'approved', // Perbaiki nama kolom menjadi 'approve'
+        'approved', 
     ];
 
     // Relasi ke model User untuk mendapatkan data pengguna yang mengajukan cuti

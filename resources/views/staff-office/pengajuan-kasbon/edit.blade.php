@@ -49,10 +49,6 @@
                     <h5 class="card-title">Edit Pengajuan Barang</h5>
                 </div>
                 <div class="card-body">
-                    <div class="undo-button">
-                        <button type="button" id="undo" class="btn btn-warning">Undo</button>
-                        <a href="/pengajuan" class="btn btn-danger">Back</a>
-                    </div>
                     <!-- Tampilkan daftar barang yang sudah diajukan -->
                     <div class="mb-3">
                         <h5>Daftar Barang:</h5>
@@ -219,14 +215,5 @@
         harga_satuan.value = barang.harga_satuan;
         total.value = barang.total;
     });
-
-    // Tambahkan event listener untuk tombol "Undo"
-    document.getElementById('undo').addEventListener('click', function() {
-        var lastField = document.querySelector('#barang-fields .barang-field:last-child');
-        if (lastField) {
-            lastField.remove();
-        }
-    });
 </script>
-
 @endsection

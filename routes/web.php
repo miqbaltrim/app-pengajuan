@@ -6,11 +6,14 @@ use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\DataKaryawanController;
+use App\Http\Controllers\StaffOffice\DashboardController;
 use App\Http\Controllers\StaffOffice\PengajuanCutiController;
 use App\Http\Controllers\StaffOffice\BarangController;
 use App\Http\Controllers\StaffOffice\PengajuanController;
 use App\Http\Controllers\AreaManager\CutiApprovalController;
 use App\Http\Controllers\AreaManager\BarangApprovalController;
+use App\Http\Controllers\ManagerOperasional\CutiApprovalControllerMo;
+use App\Http\Controllers\ManagerOperasional\BarangApprovalControllerMo;
 
 Route::get('/', function () {
     return Redirect::route('login');
@@ -86,9 +89,12 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:admin
     Route::get('/admin/data-karyawan/reset-password/{id}', [DataKaryawanController::class, 'resetPassword'])->name('admin.data-karyawan.reset-password');
 });
 
-
 // Group route untuk staff office
 Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:staff-office']], function () {
+    // Route::get('/staff-office/dashboard', [PengajuanCutiController::class, 'riwayatDashboard'])->name('staff-office.dashboard');
+    Route::get('/staff-office/dashboard', [DashboardController::class, 'index'])->name('staff-office.dashboard');
+    Route::get('/staff-office/download-surat/{id}', [DashboardController::class, 'downloadSurat'])->name('staff-office.download-surat'); // Perbarui nama rute
+    Route::get('/staff-office/notifikasi-pengajuan', [NotifikasiPengajuanController::class, 'index'])->name('staff-office.notifikasi-pengajuan.index');
     Route::get('/staff-office/pengajuan-cuti', [PengajuanCutiController::class, 'index'])->name('staff-office.pengajuan-cuti.index');
     Route::get('/staff-office/pengajuan-cuti/create', [PengajuanCutiController::class, 'create'])->name('staff-office.pengajuan-cuti.create');
     Route::post('/staff-office/pengajuan-cuti', [PengajuanCutiController::class, 'store'])->name('staff-office.pengajuan-cuti.store');
@@ -97,10 +103,11 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:staff
     Route::put('/staff-office/pengajuan-cuti/{id}', [PengajuanCutiController::class, 'update'])->name('staff-office.pengajuan-cuti.update');
     Route::delete('/staff-office/pengajuan-cuti/{id}', [PengajuanCutiController::class, 'destroy'])->name('staff-office.pengajuan-cuti.destroy');
     Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiController@view')->name('staff-office.pengajuan-cuti.view');
+    Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiController::class, 'view'])->name('staff-office.pengajuan-cuti.view');
 });
 
 
-// Group route Area-Manager Approve
+// Group Route Area-Manager Approve
 Route::middleware(['auth'])->group(function () {
     Route::get('/area-manager/approve/cuti', [CutiApprovalController::class, 'index'])->name('area-manager.approve.cuti');
     Route::post('/area-manager/approve/cuti/{id}/approve', [CutiApprovalController::class, 'approve'])->name('area-manager.approve.cuti.approve');
@@ -108,11 +115,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/rejected/{id}', [CutiApprovalController::class, 'reject'])->name('rejected');
 });
 Route::prefix('area-manager')->name('area-manager.')->group(function () {
-    Route::get('approve/barang', 'AreaManager\BarangApprovalController@index')->name('approve.barang.index');
-    Route::get('approve/barang/{id}', 'AreaManager\BarangApprovalController@detail')->name('approve.barang.detail');
-    Route::post('approve/barang/{id}/approve', 'AreaManager\BarangApprovalController@approve')->name('approve.barang.approve');
-    Route::post('approve/barang/{id}/reject', 'AreaManager\BarangApprovalController@reject')->name('approve.barang.reject');
+    Route::get('approve/barang', [BarangApprovalController::class,'index'])->name('approve.barang.index');
+    Route::get('approve/barang/{id}', [BarangApprovalController::class, 'detail'])->name('approve.barang.detail');
 });
+// Group Route Manager Operasional Approve
+Route::middleware(['auth'])->group(function () {
+    Route::get('/manager-operasional/approve/cuti', [CutiApprovalController::class, 'index'])->name('manager-operasional.approve.cuti');
+    Route::post('/manager-operasional/approve/cuti/{id}/approve', [CutiApprovalController::class, 'approve'])->name('manager-operasional.approve.cuti.approve');
+    Route::post('/approved/{id}/{action}', [CutiApprovalController::class, 'approve'])->name('approved');
+    Route::post('/rejected/{id}', [CutiApprovalController::class, 'reject'])->name('rejected');
+});
+Route::prefix('manager-operasional')->name('manager-operasional.')->group(function () {
+    Route::get('approve/barang', [BarangApprovalControllerMo::class,'index'])->name('approve.barang.index');
+    Route::get('approve/barang/{id}', [BarangApprovalControllerMo::class, 'detail'])->name('approve.barang.detail');
+});
+
+
+
+// Route::post('approve/barang/{id}/approve', 'ManagerOperasional\BarangApprovalControllerMo@approve')->name('approve.barang.approve');
+//     Route::post('approve/barang/{id}/reject', 'ManagerOperasional\BarangApprovalControllerMo@reject')->name('approve.barang.reject');
 // //Group route pengajuan barang 
 // Route::prefix('staff-office')->group(function () {
 //     Route::get('pengajuan-barang', [PengajuanBarangController::class, 'index'])->name('staff-office.pengajuan-barang.index');
@@ -145,15 +166,27 @@ Route::put('/pengajuan-barang/{id}',[PengajuanController::class, 'update'])->nam
     
 // });
 
+// Route Approve Barang
 Route::middleware(['auth'])->group(function () {
-    // Rute-rute yang memerlukan autentikasi pengguna
-
+    //Route Area Manager
     Route::get('/approve-barang', [BarangApprovalController::class, 'index'])->name('area-manager.approve.barang');
     Route::get('/area-manager/approve/barang/{id}/detail', [BarangApprovalController::class, 'detail'])->name('area-manager.approve.barang.detailBarang');
-
+    
     // Menambahkan rute untuk fungsi approve/disapprove
     Route::post('/area-manager/approve/barang/{id}/disetujui-terima', [BarangApprovalController::class, 'disetujuiTerima'])->name('area-manager.approve.barang.disetujui-terima');
     Route::post('/area-manager/approve/barang/{id}/disetujui-tolak', [BarangApprovalController::class, 'disetujuiTolak'])->name('area-manager.approve.barang.disetujui-tolak');
     Route::post('/area-manager/approve/barang/{id}/diketahui-terima', [BarangApprovalController::class, 'diketahuiTerima'])->name('area-manager.approve.barang.diketahui-terima');
     Route::post('/area-manager/approve/barang/{id}/diketahui-tolak', [BarangApprovalController::class, 'diketahuiTolak'])->name('area-manager.approve.barang.diketahui-tolak');
 });
+// Route Approve Barang
+Route::middleware(['auth'])->group(function () {
+        //Route Manager Operasioanal
+        Route::get('/approve-barang', [BarangApprovalControllerMo::class, 'index'])->name('manager-operasional.approve.barang');
+        Route::get('/manager-operasional/approve/barang/{id}/detail', [BarangApprovalControllerMo::class, 'detail'])->name('manager-operasional.approve.barang.detailBarang');
+        // Menambahkan rute untuk fungsi approve/disapprove
+        Route::post('/manager-operasional/approve/barang/{id}/disetujui-terima', [BarangApprovalControllerMo::class, 'disetujuiTerima'])->name('manager-operasional.approve.barang.disetujui-terima');
+        Route::post('/manager-operasional/approve/barang/{id}/disetujui-tolak', [BarangApprovalControllerMo::class, 'disetujuiTolak'])->name('manager-operasional.approve.barang.disetujui-tolak');
+        Route::post('/manager-operasional/approve/barang/{id}/diketahui-terima', [BarangApprovalControllerMo::class, 'diketahuiTerima'])->name('manager-operasional.approve.barang.diketahui-terima');
+        Route::post('/manager-operasional/approve/barang/{id}/diketahui-tolak', [BarangApprovalControllerMo::class, 'diketahuiTolak'])->name('manager-operasional.approve.barang.diketahui-tolak');
+});
+Route::get('/pengajuan-barang/{id}/download-surat', [PengajuanController::class, 'view'])->name('staff-office.pengajuan-barang.download-surat');

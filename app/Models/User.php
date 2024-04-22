@@ -45,14 +45,18 @@ class User extends Authenticatable
     // }
 
     public function hasRole($roleName)
-{
-    // Ambil role pengguna
-    $userRole = $this->role;
+    {
+        // Ambil role pengguna
+        $userRole = $this->role;
 
-    // Periksa apakah role pengguna sesuai dengan peran yang diberikan
-    return $userRole === $roleName;
-}
+        // Periksa apakah role pengguna sesuai dengan peran yang diberikan
+        return $userRole === $roleName;
+    }
 
-    
+    public function pengajuans()
+    {
+        return $this->hasMany(Pengajuan::class, 'dibuat_oleh');
+    }
+
 
 }

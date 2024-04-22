@@ -27,7 +27,7 @@
     <div class="container-scroller">
         
         <div class="container-fluid page-body-wrapper">
-            @include('layouts.asfa.sidebar')
+            @include('layouts.manager-operasional.sidebar')
 
             <div class="main-panel">
                 <div class="content-wrapper">

@@ -23,37 +23,6 @@
       font-weight: 500;
       margin: 5px
     }
-    /* Pagination styling */
-    .page {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .page__btn,
-    .page__numbers {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0 5px;
-        font-size: 16px;
-        cursor: pointer;
-        color: #000; /* warna teks default hitam */
-    }
-
-    .page__dots {
-        color: #6c757d;
-    }
-
-    .active a {
-        color: #007bff; /* warna teks biru hanya untuk yang aktif */
-    }
-
-    .inactive a {
-        color: #000; /* warna teks hitam untuk yang tidak aktif */
-    }
-
 </style>
 <div class="container">
     <div class="row">
@@ -63,7 +32,7 @@
                     <h5 class="card-title">Data Pengajuan Barang</h5>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('staff-office.pengajuan-barang.create') }}" class="btn btn-success mb-3">Buat Pengajuan</a>
+                    <a href="{{ route('staff-office.pengajuan-kasbon.create') }}" class="btn btn-success mb-3">Buat Pengajuan</a>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -80,12 +49,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $startNumber = ($pengajuans->currentPage() - 1) * $pengajuans->perPage() + 1;
-                                @endphp
                                 @foreach($pengajuans as $pengajuan)
                                     <tr>
-                                        <td>{{ $startNumber++ }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $pengajuan->nomor_referensi }}</td>
                                         <td>{{ $pengajuan->dibuatOleh->nama ?? 'User Tidak Ditemukan' }}</td> <!-- Menampilkan nama pengguna yang membuat pengajuan -->
                                         <td>{{ $pengajuan->disetujuiOleh->role ?? 'User Tidak Ditemukan' }}</td>
@@ -101,51 +67,25 @@
                                         <td>{{ $pengajuan->setujui }}</td>
                                         <td>{{ $pengajuan->ketahui }}</td>
                                         <td>
-                                            <!-- Tambahkan tautan edit dan formulir hapus hanya jika pengajuan belum disetujui atau belum diketahui -->
-                                            @if($pengajuan->setujui !== 'diterima' || $pengajuan->ketahui !== 'diterima')
                                             <!-- Tambahkan tautan edit -->
-                                            <a href="{{ route('staff-office.pengajuan-barang.edit', $pengajuan->id) }}" class="btn btn-primary btn-sm">Edit</a>
-
+                                            <a href="{{ route('staff-office.pengajuan-kasbon.edit', $pengajuan->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                                            
                                             <!-- Tambahkan formulir hapus -->
-                                            <form action="{{ route('staff-office.pengajuan-barang.destroy', $pengajuan->id) }}" method="POST" style="display: inline;">
+                                            <form action="{{ route('staff-office.pengajuan-kasbon.destroy', $pengajuan->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>
-                                            @endif
-
+                                            
                                             <!-- Tambahkan tautan download surat jika sudah disetujui semua -->
                                             @if($pengajuan->setujui === 'diterima' && $pengajuan->ketahui === 'diterima')
-                                                <a href="{{ route('staff-office.pengajuan-barang.download-surat', $pengajuan->id) }}" class="btn btn-info btn-sm">Download Surat</a>
+                                                <a href="{{ route('staff-office.pengajuan-kasbon.download-surat', $pengajuan->id) }}" class="btn btn-info btn-sm">Download Surat</a>
                                             @endif
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
-                    <div class="d-flex justify-content-center">
-                        <ul class="page">
-                            <li class="page__btn">
-                                @if ($pengajuans->onFirstPage())
-                                    <span class="bx bx-chevron-left inactive"></span>
-                                @else
-                                    <a href="{{ $pengajuans->previousPageUrl() }}"><span class="bx bx-chevron-left"></span></a>
-                                @endif
-                            </li>
-                            @for ($i = 1; $i <= $pengajuans->lastPage(); $i++)
-                                <li class="page__numbers @if ($pengajuans->currentPage() == $i) active @else inactive @endif">
-                                    <a href="{{ $pengajuans->setPath(url()->current())->url($i) }}">{{ $i }}</a>
-                                </li>
-                            @endfor
-                            <li class="page__btn">
-                                @if ($pengajuans->hasMorePages())
-                                    <a href="{{ $pengajuans->setPath(url()->current())->nextPageUrl() }}"><span class="bx bx-chevron-right"></span></a>
-                                @else
-                                    <span class="bx bx-chevron-right inactive"></span>
-                                @endif
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>

@@ -267,14 +267,14 @@
     <ul class="nav-list" style="margin-top: auto;">
       <li>
         <a href="/admin/dashboard">
-          <i class='bx bx-user'></i>
+          <i class='bx bx-sidebar'></i>
           <span class="links_name">Dashboard</span>
         </a>
         <span class="tooltip">Dashboard</span>
       </li>
       <li>
         <a href="/admin/data-karyawan">
-          <i class='bx bx-file'></i>
+          <i class='bx bx-user'></i>
           <span class="links_name">Data Karyawan</span>
         </a>
         <span class="tooltip">Data Karyawan</span>
