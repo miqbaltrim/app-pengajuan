@@ -280,14 +280,14 @@
         <span class="tooltip">Data Karyawan</span>
       </li>
       <li>
-        <a href="#">
+        <a href="{{ route('admin.laporan-cuti.index') }}">
           <i class='bx bx-folder' ></i>
           <span class="links_name">Laporan Cuti</span>
         </a>
         <span class="tooltip">Laporan Cuti</span>
       </li>
       <li>
-        <a href="#">
+        <a href="{{ route('admin.laporan-barang.index') }}">
           <i class='bx bx-package' ></i>
           <span class="links_name">Data Pengajuan Barang</span>
         </a>

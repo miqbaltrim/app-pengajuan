@@ -43,11 +43,16 @@
                             <a href="{{ route('staff-office.pengajuan-cuti.create') }}" class="btn btn-success">Ajukan Cuti</a>
                         @else
                             <p>Maaf, Anda tidak memiliki cuti tersisa.</p>
+                            <form action="{{ route('staff-office.pengajuan-cuti.reset') }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">Reset Jumlah Cuti</button>
+                            </form>
                         @endif
                         <div class="text" style="position: absolute; top: 10px; right: 10px;">
                             Jumlah Cuti: {{ $totalCuti }}
                         </div>
                     </div>
+                    
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>

@@ -27,6 +27,18 @@ class CutiApprovalController extends Controller
         return view('area-manager.approve.cuti', compact('ajucutis'));
     }
 
+    public function reset()
+    {
+        // Reset jumlah cuti untuk pengguna yang terkait dengan 'staff-office'
+        $users = User::where('role', 'staff-office')->get();
+        foreach ($users as $user) {
+            $user->update(['jml_cuti' => 12]);
+        }
+
+        // Redirect kembali ke halaman index dengan pesan berhasil
+        return redirect()->route('staff-office.pengajuan-cuti.index')->with('success', 'Jumlah cuti berhasil direset.');
+    }
+
     public function approve(Request $request, $id)
     {
         // Menemukan data pengajuan cuti berdasarkan ID

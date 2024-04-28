@@ -58,5 +58,12 @@ class User extends Authenticatable
         return $this->hasMany(Pengajuan::class, 'dibuat_oleh');
     }
 
+    public function ajucutis()
+    {
+        return $this->hasMany(Ajucuti::class, 'id_user');
+    }
+
+
+
 
 }

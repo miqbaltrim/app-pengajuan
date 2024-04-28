@@ -6,6 +6,9 @@ use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\DataKaryawanController;
+use App\Http\Controllers\Admin\DashboardControllerAdmin;
+use App\Http\Controllers\Admin\LaporanCutiController;
+use App\Http\Controllers\Admin\LaporanBarangController;
 use App\Http\Controllers\StaffOffice\DashboardController;
 use App\Http\Controllers\StaffOffice\PengajuanCutiController;
 use App\Http\Controllers\StaffOffice\BarangController;
@@ -74,8 +77,19 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.su
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Menangani logout melalui metode POST
 
 
-//Group route data karyawan
+//Group route Admin
 Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:admin']], function () {
+    Route::get('/admin/dashboard', [DashboardControllerAdmin::class, 'index'])->name('admin.dashboard');
+    // Menambahkan pengumuman baru
+    Route::post('/admin/pengumuman', [DashboardControllerAdmin::class, 'postAnnouncement'])->name('admin.post_announcement');
+    Route::post('/admin/pengumuman/{id}/comment', [DashboardControllerAdmin::class, 'storeComment'])->name('admin.pengumuman.comment.store');
+    // Menampilkan halaman form edit pengumuman
+    Route::get('/admin/pengumuman/edit/{id}', [DashboardControllerAdmin::class, 'editAnnouncement'])->name('admin.edit_announcement');
+    // Menyimpan perubahan pada pengumuman yang diedit
+    Route::put('/admin/pengumuman/update/{id}', [DashboardControllerAdmin::class, 'updateAnnouncement'])->name('admin.update_announcement');
+    // Menghapus pengumuman
+    Route::delete('/admin/pengumuman/delete/{id}', [DashboardControllerAdmin::class, 'deleteAnnouncement'])->name('admin.delete_announcement');
+
     Route::get('/admin/data-karyawan', [DataKaryawanController::class, 'index'])->name('admin.data-karyawan.index');
     Route::get('/admin/data-karyawan', [DataKaryawanController::class, 'index'])->name('admin.data-karyawan.create');
     Route::get('/admin/data-karyawan', [DataKaryawanController::class, 'index'])->name('admin.data-karyawan.store');
@@ -87,6 +101,21 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:admin
     Route::put('/admin/data-karyawan/{id}', [DataKaryawanController::class, 'update'])->name('admin.data-karyawan.update');
     Route::delete('/admin/data-karyawan/{id}', [DataKaryawanController::class, 'destroy'])->name('admin.data-karyawan.destroy');
     Route::get('/admin/data-karyawan/reset-password/{id}', [DataKaryawanController::class, 'resetPassword'])->name('admin.data-karyawan.reset-password');
+
+    // Route untuk menampilkan laporan cuti
+    Route::get('/admin/laporan-cuti', [LaporanCutiController::class, 'index'])->name('admin.laporan-cuti.index');
+    Route::get('/admin/laporan-cuti/search', [LaporanCutiController::class, 'search'])->name('admin.laporan-cuti.search');
+    // Definisi rute untuk Laporan Cuti
+    Route::get('/laporan-cuti', [LaporanCutiController::class, 'index'])->name('admin.laporan-cuti.index');
+    Route::get('/laporan-cuti/search', [LaporanCutiController::class, 'search'])->name('admin.laporan-cuti.search');
+    
+    // Rute untuk reset jumlah cuti
+    Route::post('/admin/laporan-cuti/reset', [LaporanCutiController::class, 'reset'])->name('admin.laporan-cuti.reset');
+
+    // Rute untuk data laporan barang
+    Route::get('/admin/data-laporan-barang', [LaporanBarangController::class, 'index'])->name('admin.laporan-barang.index');
+    Route::get('/admin/laporan-barang/{id}/detail', [LaporanBarangController::class, 'detail'])->name('admin.laporan-barang.detail');
+    Route::get('/admin/laporan-barang/search', [LaporanBarangController::class, 'search'])->name('admin.laporan-barang.search');
 });
 
 // Group route untuk staff office
@@ -104,6 +133,8 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:staff
     Route::delete('/staff-office/pengajuan-cuti/{id}', [PengajuanCutiController::class, 'destroy'])->name('staff-office.pengajuan-cuti.destroy');
     Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiController@view')->name('staff-office.pengajuan-cuti.view');
     Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiController::class, 'view'])->name('staff-office.pengajuan-cuti.view');
+    Route::post('/staff-office/pengajuan-cuti/reset', [PengajuanCutiController::class, 'reset'])->name('staff-office.pengajuan-cuti.reset');
+
 });
 
 

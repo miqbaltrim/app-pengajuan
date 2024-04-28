@@ -39,4 +39,7 @@ class Ajucuti extends Model
 
     return $totalCuti;
 }
+
+
+
 }

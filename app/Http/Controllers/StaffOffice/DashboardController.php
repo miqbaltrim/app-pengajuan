@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Ajucuti;
 use App\Models\Pengajuan;
 use App\Models\Barang;
+use App\Models\Pengumuman;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use PhpOffice\PhpWord\PhpWord;
@@ -26,7 +27,8 @@ class DashboardController extends Controller
     public function index()
     {
         // Mengambil data riwayat cuti
-        $riwayatCuti = Ajucuti::all();
+        $riwayatCuti = Ajucuti::orderBy('created_at', 'desc')->get();
+        $pengumumans = Pengumuman::all();
 
         // Mengambil data notifikasi pengajuan yang disetujui dan diketahui
         // Mendapatkan ID pengguna yang sedang login
@@ -43,7 +45,7 @@ $notifikasiPengajuan = Pengajuan::where('setujui', 'diterima')
     ->get();
 
         // Menampilkan view dashboard.blade.php di dalam direktori staff-office
-        return view('staff-office.dashboard', compact('riwayatCuti', 'notifikasiPengajuan'));
+        return view('staff-office.dashboard', compact('riwayatCuti', 'notifikasiPengajuan', 'pengumumans'));
     }
 
     // Metode untuk menampilkan surat pengajuan barang

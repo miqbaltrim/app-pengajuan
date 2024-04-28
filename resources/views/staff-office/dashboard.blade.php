@@ -41,7 +41,8 @@
     border-radius: 15px; /* Membuat sudut menjadi bulat */
     overflow-y: auto; /* Menambahkan scroll vertikal jika konten melebihi ukuran grid-item */
     max-height: 400px; /* Menentukan ketinggian maksimum grid-item sebelum scroll muncul */
-    position: relative; /* Menjadikan posisi relatif untuk judul */
+    position: relative; 
+    /* Menjadikan posisi relatif untuk judul */
   }
 
   .fixed-title {
@@ -58,7 +59,9 @@
   }
   
   .grid-item.full {
-    grid-column: span 2; /* Satu grid penuh */
+      grid-column: span 2; /* Satu grid penuh */
+      overflow-y: hidden; /* Menghapus overflow-y: auto; */
+      max-height: none; /* Mengatur tinggi maksimum menjadi none; */
   }
   
   .dashboard-info {
@@ -141,73 +144,134 @@
     color: white;
     border-radius: 15px; /* Memperbesar sudut */
   }
-  
-  
+
+  /* CSS Pengumumaman */
+  .feed-pengumuman {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Dua kolom bersebelahan */
+      gap: 20px; /* Jarak antara kolom */
+  }
+
+  .feed-pengumuman-item {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* CSS untuk konten post image dan caption */
+  .post-image img {
+      width: 100%;
+      height: 600px; /* Tetapkan tinggi gambar */
+      border-radius: 10px;
+      object-fit: cover; /* Gambar akan terisi dan terpotong jika perlu */
+  }
+
+  .post-caption {
+      padding: 10px;
+      background-color: #f3f4f6;
+      border-radius: 10px;
+  }
+
   /* CSS untuk perangkat mobile */
   @media only screen and (max-width: 600px) {
     .main-panel {
-      left: 0;
-      width: 100%;
+        left: 0;
+        width: 100%;
+      }
+      .main-panel {
+      position: relative;
+      background: #E4E9F7;
+      min-height: 100vh;
+      top: 0;
+      left: 78px;
+      width: calc(100% - 78px);
+      transition: all 0.5s ease;
+      z-index: 2;
     }
-    .main-panel {
-    position: relative;
-    background: #E4E9F7;
-    min-height: 100vh;
-    top: 0;
-    left: 78px;
-    width: calc(100% - 78px);
-    transition: all 0.5s ease;
-    z-index: 2;
-  }
-  
-  .sidebar.open ~ .main-panel {
-    left: 250px;
-    width: calc(100% - 250px);
-  }
-  
-  .main-panel .text {
-    display: inline-block;
-    color: #11101d;
-    font-size: 25px;
-    font-weight: 500;
-    margin: 5px;
-  }
-  
-    .grid-container {
-      grid-template-columns: 1fr; /* Satu kolom penuh */
+    
+    .sidebar.open ~ .main-panel {
+      left: 250px;
+      width: calc(100% - 250px);
     }
-  
-    .grid-item {
-      max-width: 100%; /* Mengisi lebar grid-item */
-      margin-top: 20px; /* Menambahkan margin atas */
+    
+    .main-panel .text {
+      display: inline-block;
+      color: #11101d;
+      font-size: 25px;
+      font-weight: 500;
+      margin: 5px;
     }
-  
-    .grid-item.full {
-      grid-column: span 1; /* Satu grid penuh */
+    
+      .grid-container {
+        grid-template-columns: 1fr; /* Satu kolom penuh */
+      }
+    
+      .grid-item {
+        max-width: 100%; /* Mengisi lebar grid-item */
+        margin-top: 20px; /* Menambahkan margin atas */
+      }
+    
+      .grid-item.full {
+        grid-column: span 1; /* Satu grid penuh */
+      }
+    
+      .fixed-title {
+        top: 0; /* Menempelkan judul pada bagian atas grid-item */
+      }
+    
+      .dashboard-info {
+        flex-direction: column; /* Mengubah tata letak menjadi vertikal */
+        align-items: flex-start; /* Menata item ke sisi kiri */
+      }
+    
+      #current-date {
+        text-align: left; /* Teks berada di sisi kiri */
+        margin-top: 10px; /* Menambahkan margin atas */
+      }
+    
+      .social-feed-item {
+        flex-direction: column; /* Mengubah tata letak menjadi vertikal */
+      }
+    
+      .social-feed-status {
+        margin-top: 10px; /* Menambahkan margin atas */
+      }
+
+      .feed-pengumuman {
+          display: block; /* Mengubah tata letak menjadi blok sehingga konten pengumuman menjadi satu kolom */
+      }
+
+      .feed-pengumuman-item {
+          margin-bottom: 20px; /* Menambahkan jarak antara setiap item pengumuman */
+          border-radius: 10px; /* Menjadikan sudut item pengumuman menjadi bulat */
+          overflow: hidden; /* Menghilangkan overflow agar konten tetap terlihat dengan baik */
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan untuk efek visual */
+      }
+      .post-image {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          border-radius: 10px;
+      }
+
+      .post-image img {
+          width: 100%;
+          height: auto;
+          object-fit: cover;
+      }
+
+      .post-caption {
+          flex: 1;
+          padding: 10px;
+          background-color: #f3f4f6;
+          border-radius: 10px;
+      }
     }
-  
-    .fixed-title {
-      top: 0; /* Menempelkan judul pada bagian atas grid-item */
-    }
-  
-    .dashboard-info {
-      flex-direction: column; /* Mengubah tata letak menjadi vertikal */
-      align-items: flex-start; /* Menata item ke sisi kiri */
-    }
-  
-    #current-date {
-      text-align: left; /* Teks berada di sisi kiri */
-      margin-top: 10px; /* Menambahkan margin atas */
-    }
-  
-    .social-feed-item {
-      flex-direction: column; /* Mengubah tata letak menjadi vertikal */
-    }
-  
-    .social-feed-status {
-      margin-top: 10px; /* Menambahkan margin atas */
-    }
-  }
 </style>
 
 <div class="content-wrapper" id="contentWrapper">
@@ -229,7 +293,7 @@
                 @foreach($riwayatCuti as $ajucuti)
                 <div class="social-feed-item">
                     <div class="social-feed-user">
-                        <img src="{{ asset(Auth::user()->photo) }}" alt="User Avatar">
+                        <img src="{{ asset($ajucuti->user->photo) }}" alt="User Avatar">
                         <div>
                             <strong>{{ $ajucuti->user->nama }}</strong><br>
                             <span>{{ $ajucuti->user->position }}</span>
@@ -266,10 +330,26 @@
                 @endforeach
             </div>
         </div>
+
         <div class="grid-item full">
-          <!-- Grid penuh layar di sebelah kanan -->
-          Konten Grid 4 (Full Screen)
-        </div>
+          <!-- Konten Grid 4 (Full Screen) -->
+          <h3 class="fixed-title">Pengumuman</h3>
+          <div class="feed-pengumuman">
+              @foreach($pengumumans as $pengumuman)
+              <div class="feed-pengumuman-item">
+                  <div class="post-content">
+                      <div class="post-image">
+                          <img src="{{ asset('storage/' . $pengumuman->image) }}" alt="Pengumuman Image">
+                      </div>
+                      <div class="post-caption">
+                          <p>{{ $pengumuman->caption }}</p>
+                      </div>
+                  </div>
+              </div>
+              @endforeach
+          </div>
+      </div>
+
       </div>
     </div>
   </div>

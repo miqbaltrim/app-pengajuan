@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('telepon', 20)->nullable();
             $table->string('position')->nullable();
             $table->string('photo')->nullable();
-            $table->integer('jml_cuti')->default(0);
+            $table->integer('jml_cuti')->default(12);
             $table->timestamps();
         });
     }
