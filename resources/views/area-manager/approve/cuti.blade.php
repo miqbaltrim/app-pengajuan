@@ -61,11 +61,11 @@
                                         @if($ajucuti->status == 'tunggu')
                                         <form action="{{ route('approved', ['id' => $ajucuti->id, 'action' => 'disetujui']) }}" method="POST" style="display: inline;">
                                             @csrf
-                                            <button type="submit" class="btn btn-success btn-sm">Setuju</button>
+                                            <button type="submit" class="btn btn-success btn-sm" onclick="confirmApprove('{{ $ajucuti->id }}')">Setuju</button>
                                         </form>
                                         <form action="{{ route('rejected', ['id' => $ajucuti->id, 'action' => 'ditolak']) }}" method="POST" style="display: inline;">
                                             @csrf
-                                            <button type="submit" class="btn btn-danger btn-sm">Tolak</button>
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="confirmReject('{{ $ajucuti->id }}')">Tolak</button>
                                         </form>
                                         @endif
                                     </td>
@@ -79,4 +79,43 @@
         </div>
     </div>
 </div>
+
+<!-- SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmApprove(id) {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: "Apakah Anda ingin menyetujui pengajuan cuti ini?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, setujui!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form for approval
+                document.querySelector(`form[action='/area-manager/approve/${id}']`).submit();
+            }
+        });
+    }
+
+    function confirmReject(id) {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: "Apakah Anda ingin menolak pengajuan cuti ini?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, tolak!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form for rejection
+                document.querySelector(`form[action='/area-manager/reject/${id}']`).submit();
+            }
+        });
+    }
+</script>
 @endsection

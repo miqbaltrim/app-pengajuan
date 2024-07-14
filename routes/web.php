@@ -5,19 +5,58 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DatabaseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+//------------------------------------------------------------------------------------------------------------------------------------
 use App\Http\Controllers\Admin\DataKaryawanController;
 use App\Http\Controllers\Admin\DashboardControllerAdmin;
 use App\Http\Controllers\Admin\LaporanCutiController;
 use App\Http\Controllers\Admin\LaporanBarangController;
+//------------------------------------------------------------------------------------------------------------------------------------
+use App\Http\Controllers\Direktur\DashboardControllerDR;
+use App\Http\Controllers\Direktur\PengajuanCutiControllerDR;
+use App\Http\Controllers\Direktur\BarangControllerDR;
+use App\Http\Controllers\Direktur\PengajuanControllerDR;
+use App\Http\Controllers\Direktur\CutiApprovalControllerDR;
+use App\Http\Controllers\Direktur\BarangApprovalControllerDR;
+use App\Http\Controllers\Direktur\PengajuanKasbonControllerDR;
+use App\Http\Controllers\Direktur\KasbonApprovalControllerDR;
+//------------------------------------------------------------------------------------------------------------------------------------
 use App\Http\Controllers\StaffOffice\DashboardController;
 use App\Http\Controllers\StaffOffice\PengajuanCutiController;
 use App\Http\Controllers\StaffOffice\BarangController;
 use App\Http\Controllers\StaffOffice\PengajuanController;
+use App\Http\Controllers\StaffOffice\PengajuanKasbonController;
+//------------------------------------------------------------------------------------------------------------------------------------
+use App\Http\Controllers\Gudang\DashboardControllerGD;
+use App\Http\Controllers\Gudang\PengajuanCutiControllerGD;
+use App\Http\Controllers\Gudang\BarangControllerGD;
+use App\Http\Controllers\Gudang\PengajuanControllerGD;
+use App\Http\Controllers\Gudang\PengajuanKasbonControllerGD;
+//------------------------------------------------------------------------------------------------------------------------------------
+use App\Http\Controllers\AreaManager\BarangControllerAM;
+use App\Http\Controllers\AreaManager\PengajuanControllerAM;
+use App\Http\Controllers\AreaManager\DashboardControllerAM;
+use App\Http\Controllers\AreaManager\PengajuanCutiControllerAM;
 use App\Http\Controllers\AreaManager\CutiApprovalController;
 use App\Http\Controllers\AreaManager\BarangApprovalController;
+use App\Http\Controllers\AreaManager\KasbonApprovalController;
+//------------------------------------------------------------------------------------------------------------------------------------
+use App\Http\Controllers\ManagerKeuangan\BarangControllerMK;
+use App\Http\Controllers\ManagerKeuangan\PengajuanControllerMK;
+use App\Http\Controllers\ManagerKeuangan\DashboardControllerMK;
+use App\Http\Controllers\ManagerKeuangan\PengajuanCutiControllerMK;
+use App\Http\Controllers\ManagerKeuangan\CutiApprovalControllerMK;
+use App\Http\Controllers\ManagerKeuangan\BarangApprovalControllerMK;
+use App\Http\Controllers\ManagerKeuangan\GajiController;
+//------------------------------------------------------------------------------------------------------------------------------------
+use App\Http\Controllers\ManagerOperasional\DashboardControllerMO;
+use App\Http\Controllers\ManagerOperasional\PengajuanCutiControllerMO;
+use App\Http\Controllers\ManagerOperasional\BarangControllerMO;
+use App\Http\Controllers\ManagerOperasional\PengajuanControllerMO;
 use App\Http\Controllers\ManagerOperasional\CutiApprovalControllerMo;
 use App\Http\Controllers\ManagerOperasional\BarangApprovalControllerMo;
-
+use App\Http\Controllers\ManagerOperasional\PengajuanKasbonControllerMO;
+use App\Http\Controllers\ManagerOperasional\KasbonApprovalControllerMO;
+//------------------------------------------------------------------------------------------------------------------------------------
 Route::get('/', function () {
     return Redirect::route('login');
 });
@@ -26,22 +65,28 @@ Route::get('/connect-database', [DatabaseController::class, 'connectDatabase']);
 
 // Route untuk tampilan login dan registrasi
 // routes/web.php
-
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-// Route::post('/login', [AuthController::class, 'login']);
-// Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-// Route::post('/register', [AuthController::class, 'register']);
+//Group route login
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Menangani logout melalui metode POST
 
+//------------------------------------------------------------------------------------------------------------------------------------
 // Group route dashboard
 Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard');
+
+Route::get('/direktur/dashboard', function () {
+    return view('direktur.dashboard');
+})->name('direktur.dashboard');
 
 Route::get('/manager-operasional/dashboard', function () {
     return view('manager-operasional.dashboard');
@@ -51,32 +96,31 @@ Route::get('/area-manager/dashboard', function () {
     return view('area-manager.dashboard');
 })->name('area-manager.dashboard');
 
+Route::get('/manager-keuangan/dashboard', function () {
+    return view('manager-keuangan.dashboard');
+})->name('manager-keuangan.dashboard');
+
 Route::get('/staff-office/dashboard', function () {
     return view('staff-office.dashboard');
 })->name('staff-office.dashboard');
 
-
-
+Route::get('/gudang/dashboard', function () {
+    return view('gudang.dashboard');
+})->name('gudang.dashboard');
+//------------------------------------------------------------------------------------------------------------------------------------
 //Group route profile user
-
 Route::get('/admin/profile', [ProfileController::class, 'showProfile'])->name('admin.profile');
+Route::get('/direktur/profile', [ProfileController::class, 'showProfile'])->name('direktur.profile');
 Route::get('/area-manager/profile', [ProfileController::class, 'showProfile'])->name('area-manager.profile');
+Route::get('/manager-keuangan/profile', [ProfileController::class, 'showProfile'])->name('manager-keuangan.profile');
 Route::get('/manager-operasional/profile', [ProfileController::class, 'showProfile'])->name('manager-operasional.profile');
 Route::get('/staff-office/profile', [ProfileController::class, 'showProfile'])->name('staff-office.profile');
+Route::get('/gudang/profile', [ProfileController::class, 'showProfile'])->name('gudang.profile');
 
 Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
 Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
 Route::post('/profile/upload-photo', [ProfileController::class, 'uploadPhoto'])->name('profile.upload_photo');
-
-
-//Group route login
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Menangani logout melalui metode POST
-
-
+//------------------------------------------------------------------------------------------------------------------------------------
 //Group route Admin
 Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:admin']], function () {
     Route::get('/admin/dashboard', [DashboardControllerAdmin::class, 'index'])->name('admin.dashboard');
@@ -117,7 +161,7 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:admin
     Route::get('/admin/laporan-barang/{id}/detail', [LaporanBarangController::class, 'detail'])->name('admin.laporan-barang.detail');
     Route::get('/admin/laporan-barang/search', [LaporanBarangController::class, 'search'])->name('admin.laporan-barang.search');
 });
-
+//------------------------------------------------------------------------------------------------------------------------------------
 // Group route untuk staff office
 Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:staff-office']], function () {
     // Route::get('/staff-office/dashboard', [PengajuanCutiController::class, 'riwayatDashboard'])->name('staff-office.dashboard');
@@ -131,73 +175,267 @@ Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:staff
     Route::get('/staff-office/pengajuan-cuti/{id}/edit', [PengajuanCutiController::class, 'edit'])->name('staff-office.pengajuan-cuti.edit');
     Route::put('/staff-office/pengajuan-cuti/{id}', [PengajuanCutiController::class, 'update'])->name('staff-office.pengajuan-cuti.update');
     Route::delete('/staff-office/pengajuan-cuti/{id}', [PengajuanCutiController::class, 'destroy'])->name('staff-office.pengajuan-cuti.destroy');
-    Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiController@view')->name('staff-office.pengajuan-cuti.view');
-    Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiController::class, 'view'])->name('staff-office.pengajuan-cuti.view');
+    Route::get('/staff-office/pengajuan-cuti/{id}/view', [PengajuanCutiController::class, 'view'])->name('staff-office.pengajuan-cuti.view');
+    Route::get('/staff-office/pengajuan-cuti/{id}/view', [PengajuanCutiController::class, 'view'])->name('staff-office.pengajuan-cuti.view');
     Route::post('/staff-office/pengajuan-cuti/reset', [PengajuanCutiController::class, 'reset'])->name('staff-office.pengajuan-cuti.reset');
 
+    Route::get('/staff-office/pengajuan-kasbon', [PengajuanKasbonController::class, 'index'])->name('staff-office.pengajuan-kasbon.index');
+    Route::get('/staff-office/kasbon/create', [PengajuanKasbonController::class, 'create'])->name('staff-office.pengajuan-kasbon.create');
+    Route::post('/staff-office/kasbon', [PengajuanKasbonController::class, 'store'])->name('staff-office.pengajuan-kasbon.store');
+    Route::get('/staff-office/pengajuan-kasbon/{id}/edit', [PengajuanKasbonController::class, 'edit'])->name('staff-office.pengajuan-kasbon.edit');
+    Route::put('/staff-office/pengajuan-kasbon/{id}', [PengajuanKasbonController::class, 'update'])->name('staff-office.pengajuan-kasbon.update');
+    Route::delete('/staff-office/pengajuan-kasbon/{id}', [PengajuanKasbonController::class, 'destroy'])->name('staff-office.pengajuan-kasbon.destroy');
+    Route::get('/staff-office/pengajuan-kasbon/view/{id}', [PengajuanKasbonController::class, 'download'])->name('staff-office.pengajuan-kasbon.download');
+    });
+// Group route staff office pengajuan barang
+Route::get('/staff-office/pengajuan', [PengajuanController::class, 'index'])->name('staff-office.pengajuan-barang.index');
+Route::get('/staff-office/pengajuan/create', [PengajuanController::class, 'create'])->name('staff-office.pengajuan-barang.create');
+Route::post('/staff-office/pengajuan/store', [PengajuanController::class, 'store'])->name('staff-office.pengajuan-barang.store');
+Route::get('/staff-officepengajuan-barang/{id}/edit', [PengajuanController::class, 'edit'])->name('staff-office.pengajuan-barang.edit');
+Route::get('/staff-officepengajuan-barang/{id}/update', [PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
+Route::delete('/staff-officepengajuan-barang/{id}', [PengajuanController::class, 'destroy'])->name('staff-office.pengajuan-barang.destroy');
+Route::delete('/staff-office/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanController::class, 'deleteItem'])->name('staff-office.pengajuan-barang.delete-item');
+Route::put('/staff-office/pengajuan-barang/{id}/update', [PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
+Route::put('/staff-office/pengajuan-barang/{id}',[PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
+//------------------------------------------------------------------------------------------------------------------------------------
+// Group route untuk gudang
+Route::group(['middleware' => ['auth', 'App\Http\Middleware\RoleMiddleware:gudang']], function () {
+    // Route::get('/gudang/dashboard', [PengajuanCutiController::class, 'riwayatDashboard'])->name('gudang.dashboard');
+    Route::get('/gudang/dashboard', [DashboardControllerGD::class, 'index'])->name('gudang.dashboard');
+    Route::get('/gudang/download-surat/{id}', [DashboardControllerGD::class, 'downloadSurat'])->name('gudang.download-surat'); // Perbarui nama rute
+    Route::get('/gudang/notifikasi-pengajuan', [NotifikasiPengajuanControllerGD::class, 'index'])->name('gudang.notifikasi-pengajuan.index');
+    Route::get('/gudang/pengajuan-cuti', [PengajuanCutiControllerGD::class, 'index'])->name('gudang.pengajuan-cuti.index');
+    Route::get('/gudang/pengajuan-cuti/create', [PengajuanCutiControllerGD::class, 'create'])->name('gudang.pengajuan-cuti.create');
+    Route::post('/gudang/pengajuan-cuti', [PengajuanCutiControllerGD::class, 'store'])->name('gudang.pengajuan-cuti.store');
+    Route::post('/gudang/pengajuan-cuti/store', [PengajuanCutiControllerGD::class, 'store'])->name('gudang.pengajuan-cuti.store');
+    Route::get('/gudang/pengajuan-cuti/{id}/edit', [PengajuanCutiControllerGD::class, 'edit'])->name('gudang.pengajuan-cuti.edit');
+    Route::put('/gudang/pengajuan-cuti/{id}', [PengajuanCutiControllerGD::class, 'update'])->name('gudang.pengajuan-cuti.update');
+    Route::delete('/gudang/pengajuan-cuti/{id}', [PengajuanCutiControllerGD::class, 'destroy'])->name('gudang.pengajuan-cuti.destroy');
+    Route::get('/gudang/pengajuan-cuti/{id}/view', [PengajuanCutiControllerGD::class, 'view'])->name('gudang.pengajuan-cuti.view');
+    Route::get('/gudang/pengajuan-cuti/{id}/view', [PengajuanCutiControllerGD::class, 'view'])->name('gudang.pengajuan-cuti.view');
+    Route::post('/gudang/pengajuan-cuti/reset', [PengajuanCutiControllerGD::class, 'reset'])->name('gudang.pengajuan-cuti.reset');
+
+    Route::get('/gudang/pengajuan-kasbon', [PengajuanKasbonControllerGD::class, 'index'])->name('gudang.pengajuan-kasbon.index');
+    Route::get('/gudang/kasbon/create', [PengajuanKasbonControllerGD::class, 'create'])->name('gudang.pengajuan-kasbon.create');
+    Route::post('/gudang/kasbon', [PengajuanKasbonControllerGD::class, 'store'])->name('gudang.pengajuan-kasbon.store');
+    Route::get('/gudang/pengajuan-kasbon/{id}/edit', [PengajuanKasbonControllerGD::class, 'edit'])->name('gudang.pengajuan-kasbon.edit');
+    Route::put('/gudang/pengajuan-kasbon/{id}', [PengajuanKasbonControllerGD::class, 'update'])->name('gudang.pengajuan-kasbon.update');
+    Route::delete('/gudang/pengajuan-kasbon/{id}', [PengajuanKasbonControllerGD::class, 'destroy'])->name('gudang.pengajuan-kasbon.destroy');
+    Route::get('/gudang/pengajuan-kasbon/view/{id}', [PengajuanKasbonControllerGD::class, 'download'])->name('gudang.pengajuan-kasbon.download');
+    });
+// Group route gudang pengajuan barang
+Route::get('/gudang/pengajuan', [PengajuanControllerGD::class, 'index'])->name('gudang.pengajuan-barang.index');
+Route::get('/gudang/pengajuan/create', [PengajuanControllerGD::class, 'create'])->name('gudang.pengajuan-barang.create');
+Route::post('/gudang/pengajuan/store', [PengajuanControllerGD::class, 'store'])->name('gudang.pengajuan-barang.store');
+Route::get('/gudang/pengajuan-barang/{id}/edit', [PengajuanControllerGD::class, 'edit'])->name('gudang.pengajuan-barang.edit');
+Route::get('/gudang/pengajuan-barang/{id}/update', [PengajuanControllerGD::class, 'update'])->name('gudang.pengajuan-barang.update');
+Route::delete('/gudang/pengajuan-barang/{id}', [PengajuanControllerGD::class, 'destroy'])->name('gudang.pengajuan-barang.destroy');
+Route::delete('/gudang/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanControllerGD::class, 'deleteItem'])->name('gudang.pengajuan-barang.delete-item');
+Route::put('/gudang/pengajuan-barang/{id}/update', [PengajuanControllerGD::class, 'update'])->name('gudang.pengajuan-barang.update');
+Route::put('/gudang/pengajuan-barang/{id}',[PengajuanControllerGD::class, 'update'])->name('gudang.pengajuan-barang.update');
+//------------------------------------------------------------------------------------------------------------------------------------
+// Group Route Manager Keuangan Approve
+Route::middleware(['auth'])->group(function () {
 });
-
-
+Route::prefix('manager-keuangan')->name('manager-keuangan.')->group(function () {
+    // Rute untuk menampilkan halaman approval barang
+    Route::get('approve/barang', [BarangApprovalControllerMK::class,'index'])->name('approve.barang.index');
+    Route::get('approve/barang/{id}', [BarangApprovalControllerMK::class, 'detail'])->name('approve.barang.detail');
+    
+    // Rute untuk GajiController
+});
+//------------------------------------------------------------------------------------------------------------------------------------
 // Group Route Area-Manager Approve
 Route::middleware(['auth'])->group(function () {
+    Route::get('/area-manager/dashboard', [DashboardControllerAM::class, 'index'])->name('area-manager.dashboard');
+    // Group Route Pengajuan Cuti
+    Route::get('/area-manager/pengajuan-cuti', [PengajuanCutiControllerAM::class, 'index'])->name('area-manager.pengajuan-cuti.index');
+    Route::get('/area-manager/pengajuan-cuti/create', [PengajuanCutiControllerAM::class, 'create'])->name('area-manager.pengajuan-cuti.create');
+    Route::post('/area-manager/pengajuan-cuti', [PengajuanCutiControllerAM::class, 'store'])->name('area-manager.pengajuan-cuti.store');
+    Route::post('/area-manager/pengajuan-cuti/store', [PengajuanCutiControllerAM::class, 'store'])->name('area-manager.pengajuan-cuti.store');
+    Route::get('/area-manager/pengajuan-cuti/{id}/edit', [PengajuanCutiControllerAM::class, 'edit'])->name('area-manager.pengajuan-cuti.edit');
+    Route::put('/area-manager/pengajuan-cuti/{id}', [PengajuanCutiControllerAM::class, 'update'])->name('area-manager.pengajuan-cuti.update');
+    Route::delete('/area-manager/pengajuan-cuti/{id}', [PengajuanCutiControllerAM::class, 'destroy'])->name('area-manager.pengajuan-cuti.destroy');
+    Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiControllerAM@view')->name('area-manager.pengajuan-cuti.view');
+    Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiControllerAM::class, 'view'])->name('area-manager.pengajuan-cuti.view');
+    Route::post('/area-manager/pengajuan-cuti/reset', [PengajuanCutiControllerAM::class, 'reset'])->name('area-manager.pengajuan-cuti.reset');
+    // Group Route Pengajuan Barang
+    Route::get('/area-manager/pengajuan', [PengajuanControllerAM::class, 'index'])->name('area-manager.pengajuan-barang.index');
+    Route::get('/area-manager/pengajuan/create', [PengajuanControllerAM::class, 'create'])->name('area-manager.pengajuan-barang.create');
+    Route::post('/area-manager/pengajuan/store', [PengajuanControllerAM::class, 'store'])->name('area-manager.pengajuan-barang.store');
+    Route::get('pengajuan-barang/{id}/edit', [PengajuanControllerAM::class, 'edit'])->name('area-manager.pengajuan-barang.edit');
+    Route::get('pengajuan-barang/{id}/update', [PengajuanControllerAM::class, 'update'])->name('area-manager.pengajuan-barang.update');
+    Route::delete('pengajuan-barang/{id}', [PengajuanControllerAM::class, 'destroy'])->name('area-manager.pengajuan-barang.destroy');
+    Route::delete('/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanControllerAM::class, 'deleteItem'])->name('area-manager.pengajuan-barang.delete-item');
+    Route::put('/pengajuan-barang/{id}/update', [PengajuanControllerAM::class, 'update'])->name('area-manager.pengajuan-barang.update');
+    Route::put('/pengajuan-barang/{id}',[PengajuanControllerAM::class, 'update'])->name('area-manager.pengajuan-barang.update');
+    // Group Route Approve Cuti
     Route::get('/area-manager/approve/cuti', [CutiApprovalController::class, 'index'])->name('area-manager.approve.cuti');
     Route::post('/area-manager/approve/cuti/{id}/approve', [CutiApprovalController::class, 'approve'])->name('area-manager.approve.cuti.approve');
     Route::post('/approved/{id}/{action}', [CutiApprovalController::class, 'approve'])->name('approved');
     Route::post('/rejected/{id}', [CutiApprovalController::class, 'reject'])->name('rejected');
+
+    Route::get('/area-manager/approve/kasbon', [KasbonApprovalController::class, 'index'])->name('area-manager.approve.kasbon');
+    // Route untuk menyetujui kasbon
+    Route::put('/kasbon/disetujui-terima/{id}', [KasbonApprovalController::class, 'disetujuiTerima'])->name('area-manager.kasbon.disetujuiTerima');
+    Route::put('/kasbon/disetujui-tolak/{id}', [KasbonApprovalController::class, 'disetujuiTolak'])->name('area-manager.kasbon.disetujuiTolak');
+    // Route untuk mengetahui kasbon
+    Route::put('/kasbon/diketahui-terima/{id}', [KasbonApprovalController::class, 'diketahuiTerima'])->name('area-manager.kasbon.diketahuiTerima');
+    Route::put('/kasbon/diketahui-tolak/{id}', [KasbonApprovalController::class, 'diketahuiTolak'])->name('area-manager.kasbon.diketahuiTolak');
+
+    Route::get('/manager-keuangan/dashboard', [DashboardControllerMK::class, 'index'])->name('manager-keuangan.dashboard');
+    // Group Route Pengajuan Cuti
+    Route::get('/manager-keuangan/pengajuan-cuti', [PengajuanCutiControllerMK::class, 'index'])->name('manager-keuangan.pengajuan-cuti.index');
+    Route::get('/manager-keuangan/pengajuan-cuti/create', [PengajuanCutiControllerMK::class, 'create'])->name('manager-keuangan.pengajuan-cuti.create');
+    Route::post('/manager-keuangan/pengajuan-cuti', [PengajuanCutiControllerMK::class, 'store'])->name('manager-keuangan.pengajuan-cuti.store');
+    Route::post('/manager-keuangan/pengajuan-cuti/store', [PengajuanCutiControllerMK::class, 'store'])->name('manager-keuangan.pengajuan-cuti.store');
+    Route::get('/manager-keuangan/pengajuan-cuti/{id}/edit', [PengajuanCutiControllerMK::class, 'edit'])->name('manager-keuangan.pengajuan-cuti.edit');
+    Route::put('/manager-keuangan/pengajuan-cuti/{id}', [PengajuanCutiControllerMK::class, 'update'])->name('manager-keuangan.pengajuan-cuti.update');
+    Route::delete('/manager-keuangan/pengajuan-cuti/{id}', [PengajuanCutiControllerMK::class, 'destroy'])->name('manager-keuangan.pengajuan-cuti.destroy');
+    Route::get('/manager-keuangan/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiControllerMK@view')->name('manager-keuangan.pengajuan-cuti.view');
+    Route::get('/manager-keuangan/pengajuan-cuti/{id}/view', [PengajuanCutiControllerMK::class, 'view'])->name('manager-keuangan.pengajuan-cuti.view');
+    Route::post('/manager-keuangan/pengajuan-cuti/reset', [PengajuanCutiControllerMK::class, 'reset'])->name('manager-keuangan.pengajuan-cuti.reset');
+    // Group Route Pengajuan Barang
+    Route::get('/manager-keuangan/pengajuan', [PengajuanControllerMK::class, 'index'])->name('manager-keuangan.pengajuan-barang.index');
+    Route::get('/manager-keuangan/pengajuan/create', [PengajuanControllerMK::class, 'create'])->name('manager-keuangan.pengajuan-barang.create');
+    Route::post('/manager-keuangan/pengajuan/store', [PengajuanControllerMK::class, 'store'])->name('manager-keuangan.pengajuan-barang.store');
+    Route::get('pengajuan-barang/{id}/edit', [PengajuanControllerMK::class, 'edit'])->name('manager-keuangan.pengajuan-barang.edit');
+    Route::get('pengajuan-barang/{id}/update', [PengajuanControllerMK::class, 'update'])->name('manager-keuangan.pengajuan-barang.update');
+    Route::delete('pengajuan-barang/{id}', [PengajuanControllerMK::class, 'destroy'])->name('manager-keuangan.pengajuan-barang.destroy');
+    Route::delete('/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanControllerMK::class, 'deleteItem'])->name('manager-keuangan.pengajuan-barang.delete-item');
+    Route::put('/pengajuan-barang/{id}/update', [PengajuanControllerMK::class, 'update'])->name('manager-keuangan.pengajuan-barang.update');
+    Route::put('/pengajuan-barang/{id}',[PengajuanControllerMK::class, 'update'])->name('manager-keuangan.pengajuan-barang.update');
+    // Group Route Approve Cuti
+    Route::get('/manager-keuangan/approve/cuti', [CutiApprovalControllerMK::class, 'index'])->name('manager-keuangan.approve.cuti');
+    Route::post('/manager-keuangan/approve/cuti/{id}/approve', [CutiApprovalControllerMK::class, 'approve'])->name('manager-keuangan.approve.cuti.approve');
+    Route::post('/approved/{id}/{action}', [CutiApprovalControllerMK::class, 'approve'])->name('approved');
+    Route::post('/rejected/{id}', [CutiApprovalControllerMK::class, 'reject'])->name('rejected');
+
+    Route::get('/manager-keuangan/data-gaji', [GajiController::class, 'index'])->name('manager-keuangan.data-gaji.index');
+    Route::put('/manager-keuangan/gaji/{user}', [GajiController::class, 'store'])->name('manager-keuangan.gaji.store');
 });
-Route::prefix('area-manager')->name('area-manager.')->group(function () {
+Route::prefix('area-manager')->name('area-manager')->group(function () {
     Route::get('approve/barang', [BarangApprovalController::class,'index'])->name('approve.barang.index');
     Route::get('approve/barang/{id}', [BarangApprovalController::class, 'detail'])->name('approve.barang.detail');
 });
+//------------------------------------------------------------------------------------------------------------------------------------
 // Group Route Manager Operasional Approve
 Route::middleware(['auth'])->group(function () {
+    Route::get('/manager-operasional/dashboard', [DashboardControllerMO::class, 'index'])->name('manager-operasional.dashboard');
+
+    // Group Route Pengajuan Cuti
+    Route::get('/manager-operasional/pengajuan-cuti', [PengajuanCutiControllerMO::class, 'index'])->name('manager-operasional.pengajuan-cuti.index');
+    Route::get('/manager-operasional/pengajuan-cuti/create', [PengajuanCutiControllerMO::class, 'create'])->name('manager-operasional.pengajuan-cuti.create');
+    Route::post('/manager-operasional/pengajuan-cuti', [PengajuanCutiControllerMO::class, 'store'])->name('manager-operasional.pengajuan-cuti.store');
+    Route::post('/manager-operasional/pengajuan-cuti/store', [PengajuanCutiControllerMO::class, 'store'])->name('manager-operasional.pengajuan-cuti.store');
+    Route::get('/manager-operasional/pengajuan-cuti/{id}/edit', [PengajuanCutiControllerMO::class, 'edit'])->name('manager-operasional.pengajuan-cuti.edit');
+    Route::put('/manager-operasional/pengajuan-cuti/{id}', [PengajuanCutiControllerMO::class, 'update'])->name('manager-operasional.pengajuan-cuti.update');
+    Route::delete('/manager-operasional/pengajuan-cuti/{id}', [PengajuanCutiControllerMO::class, 'destroy'])->name('manager-operasional.pengajuan-cuti.destroy');
+    Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiControllerMO@view')->name('manager-operasional.pengajuan-cuti.view');
+    Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiControllerMO::class, 'view'])->name('manager-operasional.pengajuan-cuti.view');
+    Route::post('/manager-operasional/pengajuan-cuti/reset', [PengajuanCutiControllerMO::class, 'reset'])->name('manager-operasional.pengajuan-cuti.reset');
+    // Group Route Pengajuan Barang
+    Route::get('/manager-operasional/pengajuan', [PengajuanControllerMO::class, 'index'])->name('manager-operasional.pengajuan-barang.index');
+    Route::get('/manager-operasional/pengajuan/create', [PengajuanControllerMO::class, 'create'])->name('manager-operasional.pengajuan-barang.create');
+    Route::post('/manager-operasional/pengajuan/store', [PengajuanControllerMO::class, 'store'])->name('manager-operasional.pengajuan-barang.store');
+    Route::get('pengajuan-barang/{id}/edit', [PengajuanControllerMO::class, 'edit'])->name('manager-operasional.pengajuan-barang.edit');
+    Route::get('pengajuan-barang/{id}/update', [PengajuanControllerMO::class, 'update'])->name('manager-operasional.pengajuan-barang.update');
+    Route::delete('pengajuan-barang/{id}', [PengajuanControllerMO::class, 'destroy'])->name('manager-operasional.pengajuan-barang.destroy');
+    Route::delete('/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanControllerMO::class, 'deleteItem'])->name('manager-operasional.pengajuan-barang.delete-item');
+    Route::put('/pengajuan-barang/{id}/update', [PengajuanControllerMO::class, 'update'])->name('manager-operasional.pengajuan-barang.update');
+    Route::put('/pengajuan-barang/{id}',[PengajuanControllerMO::class, 'update'])->name('manager-operasional.pengajuan-barang.update');
+    // Group Route Pengajuan Kasbon
+    Route::get('/manager-operasional/pengajuan-kasbon', [PengajuanKasbonControllerMO::class, 'index'])->name('manager-operasional.pengajuan-kasbon.index');
+    Route::get('/manager-operasional/kasbon/create', [PengajuanKasbonControllerMO::class, 'create'])->name('manager-operasional.pengajuan-kasbon.create');
+    Route::post('/manager-operasional/kasbon', [PengajuanKasbonControllerMO::class, 'store'])->name('manager-operasional.pengajuan-kasbon.store');
+    Route::get('/manager-operasional/pengajuan-kasbon/{id}/edit', [PengajuanKasbonControllerMO::class, 'edit'])->name('manager-operasional.pengajuan-kasbon.edit');
+    Route::put('/manager-operasional/pengajuan-kasbon/{id}', [PengajuanKasbonControllerMO::class, 'update'])->name('manager-operasional.pengajuan-kasbon.update');
+    Route::delete('/manager-operasional/pengajuan-kasbon/{id}', [PengajuanKasbonControllerMO::class, 'destroy'])->name('manager-operasional.pengajuan-kasbon.destroy');
+    Route::get('/manager-operasional/pengajuan-kasbon/view/{id}', [PengajuanKasbonControllerMO::class, 'download'])->name('manager-operasional.pengajuan-kasbon.download');
+    // Group Route Approve Pengajuan Kasbon
+    Route::get('/manager-operasional/approve/kasbon', [KasbonApprovalControllerMO::class, 'index'])->name('manager-operasional.approve.kasbon');
+            // Route untuk menyetujui kasbon
+    Route::put('/manager-operasional/kasbon/disetujui-terima/{id}', [KasbonApprovalControllerMO::class, 'disetujuiTerima'])->name('manager-operasional.kasbon.disetujuiTerima');
+    Route::put('/manager-operasional/kasbon/disetujui-tolak/{id}', [KasbonApprovalControllerMO::class, 'disetujuiTolak'])->name('manager-operasional.kasbon.disetujuiTolak');
+            // Route untuk mengetahui kasbon
+    Route::put('/manager-operasional/kasbon/diketahui-terima/{id}', [KasbonApprovalControllerMO::class, 'diketahuiTerima'])->name('manager-operasional.kasbon.diketahuiTerima');
+    Route::put('/manager-operasional/kasbon/diketahui-tolak/{id}', [KasbonApprovalControllerMO::class, 'diketahuiTolak'])->name('manager-operasional.kasbon.diketahuiTolak');
+    // Group Route Approve Pengajuan Cuti
     Route::get('/manager-operasional/approve/cuti', [CutiApprovalController::class, 'index'])->name('manager-operasional.approve.cuti');
     Route::post('/manager-operasional/approve/cuti/{id}/approve', [CutiApprovalController::class, 'approve'])->name('manager-operasional.approve.cuti.approve');
     Route::post('/approved/{id}/{action}', [CutiApprovalController::class, 'approve'])->name('approved');
     Route::post('/rejected/{id}', [CutiApprovalController::class, 'reject'])->name('rejected');
-});
+
+    // Group Route Direktur Approve
+    Route::get('/direktur/dashboard', [DashboardControllerDR::class, 'index'])->name('direktur.dashboard');
+
+    // Group Route Pengajuan Cuti
+    Route::get('/direktur/pengajuan-cuti', [PengajuanCutiControllerDR::class, 'index'])->name('direktur.pengajuan-cuti.index');
+    Route::get('/direktur/pengajuan-cuti/create', [PengajuanCutiControllerDR::class, 'create'])->name('direktur.pengajuan-cuti.create');
+    Route::post('/direktur/pengajuan-cuti', [PengajuanCutiControllerDR::class, 'store'])->name('direktur.pengajuan-cuti.store');
+    Route::post('/direktur/pengajuan-cuti/store', [PengajuanCutiControllerDR::class, 'store'])->name('direktur.pengajuan-cuti.store');
+    Route::get('/direktur/pengajuan-cuti/{id}/edit', [PengajuanCutiControllerDR::class, 'edit'])->name('direktur.pengajuan-cuti.edit');
+    Route::put('/direktur/pengajuan-cuti/{id}', [PengajuanCutiControllerDR::class, 'update'])->name('direktur.pengajuan-cuti.update');
+    Route::delete('/direktur/pengajuan-cuti/{id}', [PengajuanCutiControllerDR::class, 'destroy'])->name('direktur.pengajuan-cuti.destroy');
+    Route::get('/pengajuan-cuti/{id}/view', 'App\Http\Controllers\StaffOffice\PengajuanCutiControllerDR@view')->name('direktur.pengajuan-cuti.view');
+    Route::get('/pengajuan-cuti/{id}/view', [PengajuanCutiControllerDR::class, 'view'])->name('direktur.pengajuan-cuti.view');
+    Route::post('/direktur/pengajuan-cuti/reset', [PengajuanCutiControllerDR::class, 'reset'])->name('direktur.pengajuan-cuti.reset');
+    // Group Route Pengajuan Barang
+    Route::get('/pengajuan', [PengajuanControllerDR::class, 'index'])->name('direktur.pengajuan-barang.index');
+    Route::get('/pengajuan/create', [PengajuanControllerDR::class, 'create'])->name('direktur.pengajuan-barang.create');
+    Route::post('/pengajuan/store', [PengajuanControllerDR::class, 'store'])->name('direktur.pengajuan-barang.store');
+    Route::get('pengajuan-barang/{id}/edit', [PengajuanControllerDR::class, 'edit'])->name('direktur.pengajuan-barang.edit');
+    Route::get('pengajuan-barang/{id}/update', [PengajuanControllerDR::class, 'update'])->name('direktur.pengajuan-barang.update');
+    Route::delete('pengajuan-barang/{id}', [PengajuanControllerDR::class, 'destroy'])->name('direktur.pengajuan-barang.destroy');
+    Route::delete('/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanControllerDR::class, 'deleteItem'])->name('direktur.pengajuan-barang.delete-item');
+    Route::put('/pengajuan-barang/{id}/update', [PengajuanControllerDR::class, 'update'])->name('direktur.pengajuan-barang.update');
+    Route::put('/pengajuan-barang/{id}',[PengajuanControllerDR::class, 'update'])->name('direktur.pengajuan-barang.update');
+    // Group Route Pengajuan Kasbon
+    Route::get('/direktur/pengajuan-kasbon', [PengajuanKasbonControllerDR::class, 'index'])->name('direktur.pengajuan-kasbon.index');
+    Route::get('/direktur/kasbon/create', [PengajuanKasbonControllerDR::class, 'create'])->name('direktur.pengajuan-kasbon.create');
+    Route::post('/direktur/kasbon', [PengajuanKasbonControllerDR::class, 'store'])->name('direktur.pengajuan-kasbon.store');
+    Route::get('/direktur/pengajuan-kasbon/{id}/edit', [PengajuanKasbonControllerDR::class, 'edit'])->name('direktur.pengajuan-kasbon.edit');
+    Route::put('/direktur/pengajuan-kasbon/{id}', [PengajuanKasbonControllerDR::class, 'update'])->name('direktur.pengajuan-kasbon.update');
+    Route::delete('/direktur/pengajuan-kasbon/{id}', [PengajuanKasbonControllerDR::class, 'destroy'])->name('direktur.pengajuan-kasbon.destroy');
+    Route::get('/direktur/pengajuan-kasbon/view/{id}', [PengajuanKasbonControllerDR::class, 'download'])->name('direktur.pengajuan-kasbon.download');
+    // Group Route Approve Pengajuan Kasbon
+    Route::get('/direktur/approve/kasbon', [KasbonApprovalControllerDR::class, 'index'])->name('direktur.approve.kasbon');
+            // Route untuk menyetujui kasbon
+    Route::put('/kasbon/disetujui-terima/{id}', [KasbonApprovalControllerDR::class, 'disetujuiTerima'])->name('direktur.kasbon.disetujuiTerima');
+    Route::put('/kasbon/disetujui-tolak/{id}', [KasbonApprovalControllerDR::class, 'disetujuiTolak'])->name('direktur.kasbon.disetujuiTolak');
+            // Route untuk mengetahui kasbon
+    Route::put('/kasbon/diketahui-terima/{id}', [KasbonApprovalControllerDR::class, 'diketahuiTerima'])->name('direktur.kasbon.diketahuiTerima');
+    Route::put('/kasbon/diketahui-tolak/{id}', [KasbonApprovalControllerDR::class, 'diketahuiTolak'])->name('direktur.kasbon.diketahuiTolak');
+    // Group Route Approve Pengajuan Cuti
+    Route::get('/direktur/approve/cuti', [CutiApprovalControllerDR::class, 'index'])->name('direktur.approve.cuti');
+    Route::post('/direktur/approve/cuti/{id}/approve', [CutiApprovalControllerDR::class, 'approve'])->name('direktur.approve.cuti.approve');
+    Route::post('/approved/{id}/{action}', [CutiApprovalControllerDR::class, 'approve'])->name('approved');
+    Route::post('/rejected/{id}', [CutiApprovalControllerDR::class, 'reject'])->name('rejected');
+    });
 Route::prefix('manager-operasional')->name('manager-operasional.')->group(function () {
     Route::get('approve/barang', [BarangApprovalControllerMo::class,'index'])->name('approve.barang.index');
     Route::get('approve/barang/{id}', [BarangApprovalControllerMo::class, 'detail'])->name('approve.barang.detail');
-});
+    });
+//------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-// Route::post('approve/barang/{id}/approve', 'ManagerOperasional\BarangApprovalControllerMo@approve')->name('approve.barang.approve');
-//     Route::post('approve/barang/{id}/reject', 'ManagerOperasional\BarangApprovalControllerMo@reject')->name('approve.barang.reject');
-// //Group route pengajuan barang 
-// Route::prefix('staff-office')->group(function () {
-//     Route::get('pengajuan-barang', [PengajuanBarangController::class, 'index'])->name('staff-office.pengajuan-barang.index');
-//     Route::get('/staff-office/pengajuan-barang/create', [PengajuanBarangController::class, 'create'])->name('staff-office.pengajuan-barang.create');
-//     Route::post('/staff-office/pengajuan-barang/create', [PengajuanBarangController::class, 'store'])->name('staff-office.pengajuan-barang.store');
-// });
-
-// Group route staff office pengajuan barang
-Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('staff-office.pengajuan-barang.index');
-Route::get('/pengajuan/create', [PengajuanController::class, 'create'])->name('staff-office.pengajuan-barang.create');
-Route::post('/pengajuan/store', [PengajuanController::class, 'store'])->name('staff-office.pengajuan-barang.store');
-Route::get('pengajuan-barang/{id}/edit', [PengajuanController::class, 'edit'])->name('staff-office.pengajuan-barang.edit');
-Route::get('pengajuan-barang/{id}/update', [PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
-Route::delete('pengajuan-barang/{id}', [PengajuanController::class, 'destroy'])->name('staff-office.pengajuan-barang.destroy');
-Route::delete('/pengajuan-barang/{id}/delete-item/{item_id}', [PengajuanController::class, 'deleteItem'])->name('staff-office.pengajuan-barang.delete-item');
-Route::put('/pengajuan-barang/{id}/update', [PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
-Route::put('/pengajuan-barang/{id}',[PengajuanController::class, 'update'])->name('staff-office.pengajuan-barang.update');
-
-
-// Route::middleware(['auth'])->group(function () {
-//     // Rute-rute yang memerlukan autentikasi pengguna
-
-//     // Contoh rute untuk approve barang
-//     Route::get('/approve-barang', [BarangApprovalController::class, 'index'])->name('area-manager.approve.barang');
-//     Route::post('/area-manager/approve/barang/{id}/diterima', [BarangApprovalController::class, 'diterima'])->name('area-manager.approve.barang.diterima');
-//     Route::post('/area-manager/approve/barang/{id}/ditolak', [BarangApprovalController::class, 'ditolak'])->name('area-manager.approve.barang.ditolak');
-//     Route::get('/area-manager/approve/barang/{id}/detail-barang', [BarangApprovalController::class, 'detail'])->name('area-manager.approve.barang.detailBarang');
-//     Route::post('/area-manager/approve/barang/{id}/setujui', [BarangApprovalController::class, 'setujui'])->name('area-manager.approve.barang.setujui.barang');
-//     Route::post('/area-manager/approve/barang/{id}/tolak', [BarangApprovalController::class, 'tolak'])->name('tolak.barang');
+Route::prefix('direktur')->name('direktur.')->group(function () {
+    Route::get('approve/barang', [BarangApprovalControllerDR::class,'index'])->name('approve.barang.index');
+    Route::get('approve/barang/{id}', [BarangApprovalControllerDR::class, 'detail'])->name('approve.barang.detail');
+    });
+//------------------------------------------------------------------------------------------------------------------------------------
+// Route Approve Barang Manager Keuangan
+Route::middleware(['auth'])->group(function () {
+    //Route Area Manager
+    Route::get('/approve-barang', [BarangApprovalControllerMK::class, 'index'])->name('manager-keuangan.approve.barang');
+    Route::get('/manager-keuangan/approve/barang/{id}/detail', [BarangApprovalControllerMK::class, 'detail'])->name('manager-keuangan.approve.barang.detailBarang');
     
-// });
-
-// Route Approve Barang
+    // Menambahkan rute untuk fungsi approve/disapprove
+    Route::post('/manager-keuangan/approve/barang/{id}/disetujui-terima', [BarangApprovalControllerMK::class, 'disetujuiTerima'])->name('manager-keuangan.approve.barang.disetujui-terima');
+    Route::post('/manager-keuangan/approve/barang/{id}/disetujui-tolak', [BarangApprovalControllerMK::class, 'disetujuiTolak'])->name('manager-keuangan.approve.barang.disetujui-tolak');
+    Route::post('/manager-keuangan/approve/barang/{id}/diketahui-terima', [BarangApprovalControllerMK::class, 'diketahuiTerima'])->name('manager-keuangan.approve.barang.diketahui-terima');
+    Route::post('/manager-keuangan/approve/barang/{id}/diketahui-tolak', [BarangApprovalControllerMK::class, 'diketahuiTolak'])->name('manager-keuangan.approve.barang.diketahui-tolak');
+});
+// Route Approve Barang Area Manager
 Route::middleware(['auth'])->group(function () {
     //Route Area Manager
     Route::get('/approve-barang', [BarangApprovalController::class, 'index'])->name('area-manager.approve.barang');
@@ -209,7 +447,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/area-manager/approve/barang/{id}/diketahui-terima', [BarangApprovalController::class, 'diketahuiTerima'])->name('area-manager.approve.barang.diketahui-terima');
     Route::post('/area-manager/approve/barang/{id}/diketahui-tolak', [BarangApprovalController::class, 'diketahuiTolak'])->name('area-manager.approve.barang.diketahui-tolak');
 });
-// Route Approve Barang
+// Route Approve Barang Manager Operasional
 Route::middleware(['auth'])->group(function () {
         //Route Manager Operasioanal
         Route::get('/approve-barang', [BarangApprovalControllerMo::class, 'index'])->name('manager-operasional.approve.barang');
@@ -219,5 +457,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/manager-operasional/approve/barang/{id}/disetujui-tolak', [BarangApprovalControllerMo::class, 'disetujuiTolak'])->name('manager-operasional.approve.barang.disetujui-tolak');
         Route::post('/manager-operasional/approve/barang/{id}/diketahui-terima', [BarangApprovalControllerMo::class, 'diketahuiTerima'])->name('manager-operasional.approve.barang.diketahui-terima');
         Route::post('/manager-operasional/approve/barang/{id}/diketahui-tolak', [BarangApprovalControllerMo::class, 'diketahuiTolak'])->name('manager-operasional.approve.barang.diketahui-tolak');
+ //------------------------------------------------------------------------------------------------------------------------------------       
+        Route::get('/approve-barang', [BarangApprovalControllerDR::class, 'index'])->name('direktur.approve.barang');
+        Route::get('/direktur/approve/barang/{id}/detail', [BarangApprovalControllerDR::class, 'detail'])->name('direktur.approve.barang.detailBarang');
+        // Menambahkan rute untuk fungsi approve/disapprove
+        Route::post('/direktur/approve/barang/{id}/disetujui-terima', [BarangApprovalControllerDR::class, 'disetujuiTerima'])->name('direktur.approve.barang.disetujui-terima');
+        Route::post('/direktur/approve/barang/{id}/disetujui-tolak', [BarangApprovalControllerDR::class, 'disetujuiTolak'])->name('direktur.approve.barang.disetujui-tolak');
+        Route::post('/direktur/approve/barang/{id}/diketahui-terima', [BarangApprovalControllerDR::class, 'diketahuiTerima'])->name('direktur.approve.barang.diketahui-terima');
+        Route::post('/direktur/approve/barang/{id}/diketahui-tolak', [BarangApprovalControllerDR::class, 'diketahuiTolak'])->name('direktur.approve.barang.diketahui-tolak');
 });
 Route::get('/pengajuan-barang/{id}/download-surat', [PengajuanController::class, 'view'])->name('staff-office.pengajuan-barang.download-surat');

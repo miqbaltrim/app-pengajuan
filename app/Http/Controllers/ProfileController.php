@@ -18,6 +18,11 @@ class ProfileController extends Controller
                 return view('admin.profile');
                 break;
 
+            case 'direktur':
+                // Logika untuk profil admin
+                return view('direktur.profile');
+                break;
+
             case 'manager-operasional':
                 // Logika untuk profil admin
                 return view('manager-operasional.profile');
@@ -28,9 +33,19 @@ class ProfileController extends Controller
                 return view('area-manager.profile');
                 break;
 
+            case 'manager-keuangan':
+                // Logika untuk profil admin
+                return view('manager-keuangan.profile');
+                break;
+
             case 'staff-office':
                 // Logika untuk profil admin
                 return view('staff-office.profile');
+                break;
+
+            case 'gudang':
+                // Logika untuk profil admin
+                return view('gudang.profile');
                 break;
             
             default:
@@ -51,6 +66,7 @@ class ProfileController extends Controller
         'telepon' => 'nullable|string|max:20',
         'position' => 'nullable|string|max:255',
         'photo' => 'nullable|image|mimes:jpeg,png|max:2048', // Menambahkan validasi jenis file
+        'ttd' => 'nullable|image|mimes:jpeg,png|max:2048', // Validasi untuk TTD
     ]);
 
     // Perbarui data pengguna dengan data baru dari formulir
@@ -72,33 +88,55 @@ class ProfileController extends Controller
         $user->photo = 'photo/' . $user->id . '/' . $fileName;
     }
 
+    // Mengelola pengunggahan TTD
+    if ($request->hasFile('ttd')) {
+        $ttdPath = $request->file('ttd')->store('public/ttd/' . $user->id);
+        $ttdFileName = basename($ttdPath);
+        // Simpan path TTD ke dalam kolom ttd di basis data
+        $user->ttd = 'ttd/' . $user->id . '/' . $ttdFileName;
+    }
+
     $user->save();
 
     return redirect()->back()->with('success', 'Profile updated successfully.');
 }
 
+
 public function uploadPhoto(Request $request)
 {
     $request->validate([
-        'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // tambahkan validasi foto
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // tambahkan validasi foto
+        'ttd' => 'nullable|image|mimes:jpeg,png|max:2048', // tambahkan validasi TTD
     ]);
 
     $user = Auth::user();
 
+    // Mengelola pengunggahan foto profil
     if ($request->hasFile('photo')) {
         $file = $request->file('photo');
-        $fileName = time() . '_' . $file->getClientOriginalName();
-        $file->move(public_path('uploads/profiles'), $fileName);
+        $photoFileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/profiles'), $photoFileName);
         
-        // Simpan path foto ke database
-        $user->photo = 'uploads/profiles/' . $fileName;
-        $user->save();
-
-        return redirect()->back()->with('success', 'Profile picture uploaded successfully.');
+        // Simpan path foto ke dalam database
+        $user->photo = 'uploads/profiles/' . $photoFileName;
     }
 
-    return redirect()->back()->with('error', 'Failed to upload profile picture.');
+    // Mengelola pengunggahan TTD
+    if ($request->hasFile('ttd')) {
+        $file = $request->file('ttd');
+        $ttdFileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/ttd'), $ttdFileName);
+        
+        // Simpan path TTD ke dalam database
+        $user->ttd = 'uploads/ttd/' . $ttdFileName;
+    }
+
+    // Simpan perubahan pada model pengguna
+    $user->save();
+
+    return redirect()->back()->with('success', 'Profile updated successfully.');
 }
+
 
 
 

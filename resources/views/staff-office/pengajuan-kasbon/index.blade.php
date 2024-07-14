@@ -23,63 +23,74 @@
       font-weight: 500;
       margin: 5px
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa; /* Warna latar belakang */
+        border-radius: 15px; /* Sudut bulat */
+        padding: 20px; /* Padding */
+        margin-bottom: 10px; /* Margin bawah */
+        margin-left: 10px; /* Margin kiri */
+        margin-right: 10px; /* Margin kanan */
+        display: flex; /* Gunakan fleksibel layout */
+        justify-content: space-between; /* Posisikan teks di ujung kiri dan kanan */
+        align-items: center; /* Posisikan teks di tengah secara vertikal */
+        height: 60px;
+        margin-top: 25px; /* Tinggi jumbotron */
+    }
 </style>
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
+          <div class="jumbotron jumbotron-bg">
+            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+            <p id="current-date">tanggal</p> 
+          </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Data Pengajuan Barang</h5>
+                    <h5 class="card-title">Data Kasbon</h5>
                 </div>
                 <div class="card-body">
-                    <a href="{{ route('staff-office.pengajuan-kasbon.create') }}" class="btn btn-success mb-3">Buat Pengajuan</a>
+                    <a href="{{ route('staff-office.pengajuan-kasbon.create') }}" class="btn btn-success mb-3">Buat Kasbon</a>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nomor</th>
-                                    <th>Nomor Referensi</th>
-                                    <th>Dibuat Oleh</th>
-                                    <th>Disetujui Oleh</th>
-                                    <th>Diketahui Oleh</th>
-                                    <th>Daftar Barang</th>
-                                    <th>Approve Disetujui</th>
-                                    <th>Approve Diketahui</th>
-                                    <th>Actions</th>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>Keterangan</th>
+                                    <th>Jumlah Kasbon</th>
+                                    <th>Disetujui</th>
+                                    <th>Diketahui</th>
+                                    <th>Status Setujui</th>
+                                    <th>Status Ketahui</th>
+                                    <th>Aksi</th> <!-- Kolom untuk tombol edit dan delete -->
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($pengajuans as $pengajuan)
+                                @foreach($kasbons as $kasbon)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $pengajuan->nomor_referensi }}</td>
-                                        <td>{{ $pengajuan->dibuatOleh->nama ?? 'User Tidak Ditemukan' }}</td> <!-- Menampilkan nama pengguna yang membuat pengajuan -->
-                                        <td>{{ $pengajuan->disetujuiOleh->role ?? 'User Tidak Ditemukan' }}</td>
-                                        <td>{{ $pengajuan->diketahuiOleh->role ?? 'User Tidak Ditemukan' }}</td>
+                                        <td>{{ optional($kasbon->user)->nama }}</td> <!-- Menampilkan nama pengguna yang membuat kasbon -->
+                                        <td>{{ $kasbon->keterangan }}</td>
+                                        <td>{{ number_format($kasbon->jml_kasbon, 0, ',', '.') }}</td>
+                                        <td>{{ optional($kasbon->disetujuiOleh)->role ?? 'User Tidak Ditemukan' }}</td>
+                                        <td>{{ optional($kasbon->diketahuiOleh)->role ?? 'User Tidak Ditemukan' }}</td>
+                                        <td>{{ $kasbon->setujui }}</td>
+                                        <td>{{ $kasbon->ketahui }}</td>
                                         <td>
-                                            <!-- Tampilkan daftar barang terkait pengajuan -->
-                                            <ul>
-                                                @foreach($pengajuan->barangs as $barang)
-                                                    <li>{{ $barang->nama_barang }} ({{ $barang->qty }})</li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td>{{ $pengajuan->setujui }}</td>
-                                        <td>{{ $pengajuan->ketahui }}</td>
-                                        <td>
-                                            <!-- Tambahkan tautan edit -->
-                                            <a href="{{ route('staff-office.pengajuan-kasbon.edit', $pengajuan->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                            
-                                            <!-- Tambahkan formulir hapus -->
-                                            <form action="{{ route('staff-office.pengajuan-kasbon.destroy', $pengajuan->id) }}" method="POST" style="display: inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
-                                            
-                                            <!-- Tambahkan tautan download surat jika sudah disetujui semua -->
-                                            @if($pengajuan->setujui === 'diterima' && $pengajuan->ketahui === 'diterima')
-                                                <a href="{{ route('staff-office.pengajuan-kasbon.download-surat', $pengajuan->id) }}" class="btn btn-info btn-sm">Download Surat</a>
+                                            @if($kasbon->setujui == 'diterima' && $kasbon->ketahui == 'diterima')
+                                                <a href="{{ route('staff-office.pengajuan-kasbon.download', $kasbon->id) }}" class="btn btn-success btn-sm">Download</a>
+                                            @else
+                                                <a href="{{ route('staff-office.pengajuan-kasbon.edit', $kasbon->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                                                <form action="{{ route('staff-office.pengajuan-kasbon.destroy', $kasbon->id) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Delete</button>
+                                                </form>
                                             @endif
                                         </td>
                                     </tr>
@@ -92,4 +103,14 @@
         </div>
     </div>
 </div>
+<script>
+    // Mendapatkan elemen untuk tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    // Mendapatkan tanggal hari ini
+    const currentDate = new Date();
+    // Mendapatkan string tanggal dengan format tertentu
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Menampilkan tanggal terkini pada elemen currentDateElement
+    currentDateElement.textContent = dateString;
+</script>
 @endsection

@@ -58,17 +58,37 @@
             transition: .5s ease-in-out;
         }
         
-        input {
+        input{
             width: 60%;
             height: 20px;
             background: #e0dede;
             justify-content: center;
             display: flex;
-            margin: 10px auto; /* Ubah margin atas dan bawah */
+            margin: 10px auto;
             padding: 10px;
             border: none;
             outline: none;
             border-radius: 5px;
+            font-size: 16px;
+        }
+
+        select {
+            color: #888; /* Default placeholder color */
+            width: 66%;
+            height: 40px;
+            background: #e0dede;
+            justify-content: center;
+            display: flex;
+            margin: 10px auto;
+            padding: 10px;
+            border: none;
+            outline: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        select:valid {
+            color: #000; /* Selected option color */
         }
         
         button {
@@ -125,6 +145,7 @@
             font-size: 0.8em;
             margin-top: 5px;
         }
+        
     </style>
 </head>
 <body>
@@ -147,7 +168,20 @@
             <form method="POST" action="{{ route('register') }}">
                 @csrf
                 <label for="chk" aria-hidden="true">Signup</label>
-                <input type="text" name="nama" placeholder="User nama" required="">
+                <input type="text" name="nama" placeholder="User Name" required="">
+                <select name="role" required="">
+                    <option value="" disabled selected hidden>Posisi Anda</option>
+                    <option value="admin">Admin</option>
+                    <option value="direktur">Direktur</option>
+                    <option value="manager-operasional">Manager Operasional</option>
+                    <option value="manager-territory">Manager Territory</option>
+                    <option value="manager-keuangan">Manager Keuangan</option>
+                    <option value="area-manager">Area Manager</option>
+                    <option value="kepala-cabang">Kepala Cabang</option>
+                    <option value="kepala-gudang">Kepala Gudang</option>
+                    <option value="staff-office">Staff Office</option>
+                    <option value="gudang">Gudang</option>
+                </select>
                 <input type="email" name="email" placeholder="Email" required="">
                 <input type="password" name="password" placeholder="Password" required="">
                 <input type="password" name="password_confirmation" placeholder="Confirm Password" required="">

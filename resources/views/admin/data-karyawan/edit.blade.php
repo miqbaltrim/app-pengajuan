@@ -128,4 +128,18 @@
         });
     });
 </script>
+<!-- SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.29/dist/sweetalert2.min.js"></script>
+
+<!-- Script untuk menampilkan popup error jika validasi gagal -->
+@if ($errors->any())
+    <script>
+        Swal.fire({
+            title: 'Error',
+            text: '{{ $errors->first() }}',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
 @endsection

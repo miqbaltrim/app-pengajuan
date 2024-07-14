@@ -21,6 +21,7 @@ class User extends Authenticatable
         'position',
         'photo',
         'jml_cuti',
+        'ttd',
     ];
 
     protected $hidden = [
@@ -62,8 +63,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ajucuti::class, 'id_user');
     }
-
-
-
+    public function gaji()
+    {
+        return $this->hasOne(Gaji::class);
+    }
+    public function kasbon()
+    {
+        return $this->hasOne(Gaji::class);
+    }
 
 }

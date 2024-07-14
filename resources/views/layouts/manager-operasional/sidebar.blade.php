@@ -273,18 +273,25 @@
         <span class="tooltip">Dashboard</span>
       </li>
       <li>
-        <a href="">
+        <a href="{{ route('manager-operasional.pengajuan-cuti.index') }}">
           <i class='bx bx-file'></i>
           <span class="links_name">Pengajuan Cuti</span>
         </a>
         <span class="tooltip">Pengajuan Cuti</span>
       </li>
+      <li>
+        <a href="{{ route('manager-operasional.pengajuan-kasbon.index') }}">
+          <i class='bx bx-money'></i>
+          <span class="links_name">Pengajuan Kasbon</span>
+        </a>
+        <span class="tooltip">Pengajuan Kasbon</span>
+      </li>
         <li>
-          <a href="#">
+          <a href="{{ route('manager-operasional.pengajuan-barang.index') }}">
             <i class='bx bx-package' ></i>
-            <span class="links_name">Data Pengajuan Barang</span>
+            <span class="links_name">Pengajuan Barang</span>
           </a>
-          <span class="tooltip">Data Pengajuan Barang</span>
+          <span class="tooltip">Pengajuan Barang</span>
         </li>  
         <li>
           <a href="{{ route('manager-operasional.approve.cuti') }}">
@@ -299,6 +306,13 @@
             <span class="links_name">Approve Barang</span>
           </a>
           <span class="tooltip">Approve Barang</span>
+        </li>  
+        <li>
+          <a href="/manager-operasional/approve/kasbon">
+            <i class='bx bx-money' ></i>
+            <span class="links_name">Approve Kasbon</span>
+          </a>
+          <span class="tooltip">Approve Kasbon</span>
         </li>  
       <li class="profile">
         <a href="{{ route(Auth::user()->role . '.profile') }}"> <!-- Tambahkan tautan ke halaman profil di sini -->

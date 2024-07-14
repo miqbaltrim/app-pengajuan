@@ -267,20 +267,20 @@
     <ul class="nav-list" style="margin-top: auto;">
       <li>
         <a href="/area-manager/dashboard">
-          <i class='bx bx-user'></i>
+          <i class='bx bx-sidebar'></i>
           <span class="links_name">Dashboard</span>
         </a>
         <span class="tooltip">Dashboard</span>
       </li>
       <li>
-        <a href="">
+        <a href="/area-manager/pengajuan-cuti">
           <i class='bx bx-file'></i>
           <span class="links_name">Pengajuan Cuti</span>
         </a>
         <span class="tooltip">Pengajuan Cuti</span>
       </li>
         <li>
-          <a href="#">
+          <a href="{{ route('area-manager.pengajuan-barang.index') }}">
             <i class='bx bx-package' ></i>
             <span class="links_name">Data Pengajuan Barang</span>
           </a>
@@ -299,6 +299,13 @@
             <span class="links_name">Approve Barang</span>
           </a>
           <span class="tooltip">Approve Barang</span>
+        </li>  
+        <li>
+          <a href="/area-manager/approve/kasbon">
+            <i class='bx bx-money' ></i>
+            <span class="links_name">Approve Kasbon</span>
+          </a>
+          <span class="tooltip">Approve Kasbon</span>
         </li>  
       <li class="profile">
         <a href="{{ route(Auth::user()->role . '.profile') }}"> <!-- Tambahkan tautan ke halaman profil di sini -->

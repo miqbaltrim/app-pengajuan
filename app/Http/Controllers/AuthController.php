@@ -50,15 +50,23 @@ class AuthController extends Controller
             case 'admin':
                 return redirect()->route('admin.dashboard');
                 break;
-
+            case 'direktur':
+                return redirect()->route('direktur.dashboard');
+                break;
             case 'manager-operasional':
                 return redirect()->route('manager-operasional.dashboard');
                 break;
             case 'area-manager':
                 return redirect()->route('area-manager.dashboard');
                 break;
+            case 'manager-keuangan':
+                return redirect()->route('manager-keuangan.dashboard');
+                break;
             case 'staff-office':
                 return redirect()->route('staff-office.dashboard');
+                break;
+            case 'gudang':
+                return redirect()->route('gudang.dashboard');
                 break;
             // Tambahkan case untuk setiap peran dengan rute dashboard yang sesuai
             default:
@@ -88,6 +96,7 @@ class AuthController extends Controller
         // Validasi input form
         $request->validate([
             'nama' => 'required|string|max:255',
+            'role' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang,staff-office,gudang',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed', // Konfirmasi password
         ]);
@@ -95,6 +104,7 @@ class AuthController extends Controller
         // Simpan data pengguna ke database
         $user = User::create([
             'nama' => $request->nama,
+            'role' => $request->role,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);

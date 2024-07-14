@@ -38,28 +38,33 @@ class DataKaryawanController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Atur validasi untuk foto
         ]);
 
-        // Simpan data karyawan ke dalam database
-        $karyawan = new User();
-        $karyawan->nama = $request->nama;
-        $karyawan->email = $request->email;
-        $karyawan->role = $request->role;
-        $karyawan->alamat = $request->alamat;
-        $karyawan->telepon = $request->telepon;
-        $karyawan->position = $request->position;
+        try {
+            // Simpan data karyawan ke dalam database
+            $karyawan = new User();
+            $karyawan->nama = $request->nama;
+            $karyawan->email = $request->email;
+            $karyawan->role = $request->role;
+            $karyawan->alamat = $request->alamat;
+            $karyawan->telepon = $request->telepon;
+            $karyawan->position = $request->position;
 
-        // Simpan foto jika ada
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-            $photoName = time() . '.' . $photo->getClientOriginalExtension();
-            $photo->move(public_path('photos'), $photoName);
-            $karyawan->photo = 'photos/' . $photoName;
+            // Simpan foto jika ada
+            if ($request->hasFile('photo')) {
+                $photo = $request->file('photo');
+                $photoName = time() . '.' . $photo->getClientOriginalExtension();
+                $photo->move(public_path('photos'), $photoName);
+                $karyawan->photo = 'photos/' . $photoName;
+            }
+
+            // Lakukan penyimpanan data karyawan
+            $karyawan->save();
+
+            // Redirect ke halaman yang sesuai setelah penyimpanan berhasil
+            return redirect()->route('admin.data-karyawan.index')->with('success', 'Data karyawan berhasil disimpan.');
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, kirimkan pesan error ke view
+            return redirect()->back()->withInput()->withErrors(['error' => 'Gagal menyimpan data karyawan. Silakan coba lagi.']);
         }
-
-        // Lakukan penyimpanan data karyawan
-        $karyawan->save();
-
-        // Redirect ke halaman yang sesuai setelah penyimpanan berhasil
-        return redirect()->route('admin.data-karyawan.index')->with('success', 'Data karyawan berhasil disimpan.');
     }
 
     public function edit($id)

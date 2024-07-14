@@ -102,7 +102,7 @@ public function reset()
     {
         $request->validate([
             'mulai_cuti' => 'required|date',
-            'selesai_cuti' => 'required|date',
+            'selesai_cuti' => 'required|date|after_or_equal:mulai_cuti',
             'alasan' => 'required|string',
             'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
         ]);
@@ -132,7 +132,7 @@ public function reset()
             // Menghitung jumlah hari cuti yang diajukan pada pengajuan ini
             $mulaiCuti = strtotime($request->mulai_cuti);
             $selesaiCuti = strtotime($request->selesai_cuti);
-            $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+            $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24) + 1; // Tambahkan 1 hari untuk memasukkan hari terakhir
 
             // Memeriksa apakah pengguna mencoba mengambil cuti melebihi jatahnya
             if ($totalCuti - $hariCuti < 0) {
@@ -159,11 +159,9 @@ public function reset()
             // Rollback transaksi jika terjadi kesalahan dan tangani kesalahan
             DB::rollback();
             // Tangani kesalahan
-            // ...
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengajukan cuti.');
         }
     }
-
     // Function untuk menampilkan halaman edit
     public function edit($id)
     {
@@ -175,73 +173,72 @@ public function reset()
     }
 
     public function update(Request $request, $id)
-{
-    $request->validate([
-        'mulai_cuti' => 'required|date',
-        'selesai_cuti' => 'required|date',
-        'alasan' => 'required|string',
-        'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
-    ]);
+    {
+        $request->validate([
+            'mulai_cuti' => 'required|date',
+            'selesai_cuti' => 'required|date|after_or_equal:mulai_cuti',
+            'alasan' => 'required|string',
+            'approved' => 'required|in:admin,direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
+        ]);
 
-    // Mengambil data Ajucuti berdasarkan ID
-    $ajucuti = Ajucuti::findOrFail($id);
+        // Mengambil data Ajucuti berdasarkan ID
+        $ajucuti = Ajucuti::findOrFail($id);
 
-    // Mendapatkan jumlah cuti default dari database untuk pengguna saat ini
-    $user = User::find(Auth::id());
-    $totalCuti = $user->jml_cuti;
+        // Mendapatkan jumlah cuti default dari database untuk pengguna saat ini
+        $user = User::find(Auth::id());
+        $totalCuti = $user->jml_cuti;
 
-    // Memulai transaksi database
-    DB::beginTransaction();
+        // Memulai transaksi database
+        DB::beginTransaction();
 
-    try {
-        // Menghitung total cuti yang telah diajukan untuk pengguna saat ini
-        $ajucutis = Ajucuti::where('id_user', Auth::id())->get();
-        foreach ($ajucutis as $cuti) {
-            if ($cuti->status == 'disetujui') {
-                // Menghitung jumlah hari cuti yang diambil
-                $mulaiCuti = strtotime($cuti->mulai_cuti);
-                $selesaiCuti = strtotime($cuti->selesai_cuti);
-                $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+        try {
+            // Menghitung total cuti yang telah diajukan untuk pengguna saat ini
+            $ajucutis = Ajucuti::where('id_user', Auth::id())->get();
+            foreach ($ajucutis as $cuti) {
+                if ($cuti->status == 'disetujui') {
+                    // Menghitung jumlah hari cuti yang diambil
+                    $mulaiCuti = strtotime($cuti->mulai_cuti);
+                    $selesaiCuti = strtotime($cuti->selesai_cuti);
+                    $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
 
-                // Mengurangi jumlah cuti yang diambil dari total cuti
-                $totalCuti -= $hariCuti;
+                    // Mengurangi jumlah cuti yang diambil dari total cuti
+                    $totalCuti -= $hariCuti;
+                }
             }
-        }
 
-        // Menghitung jumlah hari cuti yang diajukan pada update ini
-        $mulaiCuti = strtotime($request->mulai_cuti);
-        $selesaiCuti = strtotime($request->selesai_cuti);
-        $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24);
+            // Menghitung jumlah hari cuti yang diajukan pada update ini
+            $mulaiCuti = strtotime($request->mulai_cuti);
+            $selesaiCuti = strtotime($request->selesai_cuti);
+            $hariCuti = ($selesaiCuti - $mulaiCuti) / (60 * 60 * 24) + 1; // Tambahkan 1 hari untuk memasukkan hari terakhir
 
-        // Memeriksa apakah pengguna mencoba mengambil cuti melebihi jatahnya
-        if ($hariCuti > $totalCuti) {
-            // Jika ya, rollback transaksi dan kembalikan dengan pesan error
+            // Memeriksa apakah pengguna mencoba mengambil cuti melebihi jatahnya
+            if ($hariCuti > $totalCuti) {
+                // Jika ya, rollback transaksi dan kembalikan dengan pesan error
+                DB::rollback();
+                return redirect()->back()->with('error', 'Maaf, Anda mencoba mengambil cuti melebihi jatah cuti yang tersisa.');
+            }
+
+            // Mengisi data Ajucuti dengan data dari form
+            $ajucuti->mulai_cuti = $request->mulai_cuti;
+            $ajucuti->selesai_cuti = $request->selesai_cuti;
+            $ajucuti->alasan = $request->alasan;
+            $ajucuti->approved = $request->approved;
+
+            // Menyimpan perubahan
+            $ajucuti->save();
+
+            // Commit transaksi
+            DB::commit();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('staff-office.pengajuan-cuti.index')->with('success', 'Pengajuan cuti berhasil diperbarui.');
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi kesalahan dan tangani kesalahan
             DB::rollback();
-            return redirect()->back()->with('error', 'Maaf, Anda mencoba mengambil cuti melebihi jatah cuti yang tersisa.');
+            // Tangani kesalahan
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui pengajuan cuti.');
         }
-
-        // Mengisi data Ajucuti dengan data dari form
-        $ajucuti->mulai_cuti = $request->mulai_cuti;
-        $ajucuti->selesai_cuti = $request->selesai_cuti;
-        $ajucuti->alasan = $request->alasan;
-        $ajucuti->approved = $request->approved;
-
-        // Menyimpan perubahan
-        $ajucuti->save();
-
-        // Commit transaksi
-        DB::commit();
-
-        // Redirect dengan pesan sukses
-        return redirect()->route('staff-office.pengajuan-cuti.index')->with('success', 'Pengajuan cuti berhasil diperbarui.');
-    } catch (\Exception $e) {
-        // Rollback transaksi jika terjadi kesalahan dan tangani kesalahan
-        DB::rollback();
-        // Tangani kesalahan
-        // ...
-        return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui pengajuan cuti.');
     }
-}
 
 
     // Function untuk menghapus data pengajuan cuti
@@ -304,6 +301,7 @@ public function reset()
     $templateProcessor->setValue('tanggal_mulai', strftime('%d %B %Y', strtotime($ajucuti->mulai_cuti)));
     $templateProcessor->setValue('tanggal_selesai', strftime('%d %B %Y', strtotime($ajucuti->selesai_cuti)));
     $templateProcessor->setValue('alasan', $ajucuti->alasan);
+    $templateProcessor->setImageValue('ttd', ['path' => public_path($ajucuti->user->ttd), 'width' => 100, 'height' => 100]);
     $templateProcessor->setValue('durasi_cuti', $durasiCuti); // Menampilkan durasi cuti dalam hari
     $templateProcessor->setValue('tanggal_kembali', $tanggalKembali); // Menampilkan tanggal kembali bekerja
     $templateProcessor->setValue('created_at', strftime('%d %B %Y', strtotime($ajucuti->created_at))); 

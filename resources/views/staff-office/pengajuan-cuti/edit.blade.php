@@ -45,7 +45,7 @@
                             {{ session('error') }}
                         </div>
                     @endif
-                    <form action="{{ route('staff-office.pengajuan-cuti.update', $ajucuti->id) }}" method="POST">
+                    <form id="cutiForm" action="{{ route('staff-office.pengajuan-cuti.update', $ajucuti->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
@@ -80,4 +80,24 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cutiForm = document.getElementById('cutiForm');
+        cutiForm.addEventListener('submit', function (event) {
+            const mulaiCuti = new Date(document.getElementById('mulai_cuti').value);
+            const selesaiCuti = new Date(document.getElementById('selesai_cuti').value);
+
+            if (selesaiCuti < mulaiCuti) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan',
+                    text: 'Tanggal selesai cuti harus sama atau setelah tanggal mulai cuti.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+</script>
 @endsection

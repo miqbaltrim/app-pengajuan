@@ -46,70 +46,53 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Buat Pengajuan Barang</h5>
+                    <h5 class="card-title">Buat Kasbon</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Tombol "Undo" -->
-                    <div class="undo-button">
-                        <button type="button" id="undo" class="btn btn-warning">Undo</button>
-                    </div>
-                    <!-- Formulir untuk menambahkan barang baru -->
-                    <form action="{{ route('staff-office.pengajuan-barang.store') }}" method="POST" id="barang-form">
+                    <!-- Formulir untuk membuat kasbon baru -->
+                    <form action="{{ route('staff-office.pengajuan-kasbon.store') }}" method="POST" id="kasbon-form">
                         @csrf
+                        <!-- Bagian "Keterangan" -->
                         <div class="mb-3">
-                            <label for="nomor_referensi" class="form-label">Nomor Referensi:</label>
-                            <input type="text" class="form-control" id="nomor_referensi" name="nomor_referensi" value="{{ $nextReferenceNumber }}" readonly required>
+                            <label for="keterangan" class="form-label">Keterangan:</label>
+                            <textarea class="form-control" id="keterangan" name="keterangan" rows="3" required></textarea>
+                        </div>
+                        <!-- Bagian "Jumlah Kasbon" -->
+                        <div class="mb-3">
+                            <label for="jml_kasbon" class="form-label">Jumlah Kasbon:</label>
+                            <input type="number" class="form-control" id="jml_kasbon" name="jml_kasbon" required>
+                        </div>
+                        <!-- Bagian "Cicilan" -->
+                        <div class="mb-3">
+                            <label for="cicilan" class="form-label">Cicilan:</label>
+                            <select class="form-select" id="cicilan" name="cicilan" required>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
                         </div>
                         <!-- Bagian "Disetujui Oleh" -->
                         <div class="mb-3">
                             <label for="disetujui_oleh" class="form-label">Disetujui Oleh:</label>
                             <select class="form-select" id="disetujui_oleh" name="disetujui_oleh" required>
-                                <!-- Tampilkan opsi berdasarkan daftar peran -->
-                                @foreach(['direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
+                                @foreach(['admin','direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
                                     <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                 @endforeach
+
                             </select>
                         </div>
-
                         <!-- Bagian "Diketahui Oleh" -->
                         <div class="mb-3">
                             <label for="diketahui_oleh" class="form-label">Diketahui Oleh:</label>
                             <select class="form-select" id="diketahui_oleh" name="diketahui_oleh" required>
-                                <!-- Tampilkan opsi berdasarkan daftar peran -->
-                                @foreach(['direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
+                                @foreach(['admin','direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
                                     <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        
-                        <!-- Tambahkan bidang input untuk setiap barang -->
-                        <div id="barang-fields">
-                            <div class="barang-field">
-                                <div class="mb-3">
-                                    <label for="nama_barang[]" class="form-label">Nama Barang:</label>
-                                    <input type="text" class="form-control" name="nama_barang[]" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="qty[]" class="form-label">Jumlah:</label>
-                                    <input type="number" class="form-control" name="qty[]" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="harga_satuan[]" class="form-label">Harga Satuan:</label>
-                                    <input type="number" class="form-control" name="harga_satuan[]" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="total[]" class="form-label">Total:</label>
-                                    <input type="number" class="form-control total" name="total[]" readonly required>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Tombol "Tambah Barang" -->
-                        <div class="mb-3">
-                            <button type="button" id="add-barang" class="btn btn-primary">Tambah Barang</button>
-                        </div>
                         <!-- Tombol "Submit" -->
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-success">Simpan Pengajuan</button>
+                            <button type="submit" class="btn btn-success">Buat Kasbon</button>
                         </div>
                     </form>
                 </div>
@@ -117,66 +100,4 @@
         </div>
     </div>
 </div>
-<script>
-    document.getElementById('add-barang').addEventListener('click', function() {
-    var field = document.querySelector('.barang-field').cloneNode(true);
-    // Bersihkan nilai bidang input
-    field.querySelectorAll('input').forEach(function(input) {
-        input.value = '';
-    });
-    document.getElementById('barang-fields').appendChild(field);
-    
-    // Panggil fungsi untuk mengikat event listener pada input baru
-    bindEventListeners();
-});
-
-// Fungsi untuk mengikat event listener pada setiap input
-function bindEventListeners() {
-    var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
-    var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
-    
-    qtyInputs.forEach(function(qtyInput, index) {
-        qtyInput.addEventListener('input', function() {
-            updateTotal(index);
-        });
-    });
-    
-    hargaSatuanInputs.forEach(function(hargaSatuanInput, index) {
-        hargaSatuanInput.addEventListener('input', function() {
-            updateTotal(index);
-        });
-    });
-}
-
-// Fungsi untuk menghitung total
-function updateTotal(index) {
-    var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
-    var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
-    var totalInputs = document.querySelectorAll('.total');
-    
-    var qty = parseFloat(qtyInputs[index].value);
-    var hargaSatuan = parseFloat(hargaSatuanInputs[index].value);
-    var total = qty * hargaSatuan;
-    totalInputs[index].value = total.toFixed(2);
-}
-
-// Panggil fungsi untuk mengikat event listener pada input yang sudah ada saat halaman dimuat
-bindEventListeners();
-
-document.getElementById('undo').addEventListener('click', function() {
-    var lastField = document.querySelector('#barang-fields .barang-field:last-child');
-    if (lastField) {
-        lastField.remove();
-    }
-});
-
-function padWithZeroes(number, length) {
-    var padded = number.toString();
-    while (padded.length < length) {
-        padded = '0' + padded;
-    }
-    return padded;
-}
-</script>
-
 @endsection

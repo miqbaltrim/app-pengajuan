@@ -29,39 +29,54 @@
     .card {
         margin-top: 20px;
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa; /* Warna latar belakang */
+        border-radius: 15px; /* Sudut bulat */
+        padding: 20px; /* Padding */
+        margin-bottom: 10px; /* Margin bawah */
+        margin-left: 10px; /* Margin kiri */
+        margin-right: 10px; /* Margin kanan */
+        display: flex; /* Gunakan fleksibel layout */
+        justify-content: space-between; /* Posisikan teks di ujung kiri dan kanan */
+        align-items: center; /* Posisikan teks di tengah secara vertikal */
+        height: 60px;
+        margin-top: 25px; /* Tinggi jumbotron */
+    }
 </style>
-<<div class="container">
+<div class="container">
     <div class="row">
-        <div class="col-md-8 offset-md-2">
+        <div class="col-lg-12">
+          <div class="jumbotron jumbotron-bg">
+            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+            <p id="current-date">tanggal</p> 
+          </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title">Formulir Pengajuan Cuti</h5>
-                    <a href="/staff-office/pengajuan-cuti" class="btn btn-danger">Back</a> <!-- Back button -->
+                <div class="card-header">
+                    <h5 class="card-title">Ajukan Cuti</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Popup untuk pesan error -->
-                    @if(session('error'))
-                    <div class="alert alert-danger" role="alert">
-                        {{ session('error') }}
-                    </div>
-                    @endif
-                    <form action="{{ route('staff-office.pengajuan-cuti.store') }}" method="POST">
+                    <form id="cutiForm" action="{{ route('staff-office.pengajuan-cuti.store') }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="mulai_cuti" class="form-label">Tanggal Mulai Cuti</label>
+                        <div class="form-group">
+                            <label for="mulai_cuti">Mulai Cuti</label>
                             <input type="date" class="form-control" id="mulai_cuti" name="mulai_cuti" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="selesai_cuti" class="form-label">Tanggal Selesai Cuti</label>
+                        <div class="form-group">
+                            <label for="selesai_cuti">Selesai Cuti</label>
                             <input type="date" class="form-control" id="selesai_cuti" name="selesai_cuti" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="alasan" class="form-label">Alasan Cuti</label>
-                            <textarea class="form-control" id="alasan" name="alasan" rows="3" required></textarea>
+                        <div class="form-group">
+                            <label for="alasan">Alasan</label>
+                            <textarea class="form-control" id="alasan" name="alasan" required></textarea>
                         </div>
-                        <div class="mb-3">
-                            <label for="approved" class="form-label">Approve</label>
-                            <select class="form-select" id="approved" name="approved" required>
+                        <div class="form-group">
+                            <label for="approved">Approved</label>
+                            <select class="form-control" id="approved" name="approved" required>
                                 <option value="admin">Admin</option>
                                 <option value="direktur">Direktur</option>
                                 <option value="manager-operasional">Manager Operasional</option>
@@ -79,4 +94,31 @@
         </div>
     </div>
 </div>
+<!-- JavaScript untuk menampilkan popup -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cutiForm = document.getElementById('cutiForm');
+        cutiForm.addEventListener('submit', function (event) {
+            const mulaiCuti = new Date(document.getElementById('mulai_cuti').value);
+            const selesaiCuti = new Date(document.getElementById('selesai_cuti').value);
+
+            if (selesaiCuti < mulaiCuti) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan',
+                    text: 'Tanggal selesai cuti harus sama atau setelah tanggal mulai cuti.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+    
+    // Menampilkan tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    const currentDate = new Date();
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    currentDateElement.textContent = dateString;
+</script>
 @endsection

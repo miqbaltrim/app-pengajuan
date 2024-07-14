@@ -282,17 +282,17 @@
       <li>
         <a href="{{ route('staff-office.pengajuan-barang.index') }}">
           <i class='bx bx-package'></i>
-          <span class="links_name">Data Pengajuan Barang</span>
+          <span class="links_name">Pengajuan Barang</span>
         </a>
-        <span class="tooltip">Data Pengajuan Barang</span>
+        <span class="tooltip">Pengajuan Barang</span>
       </li>
-      {{-- <li>
+      <li>
         <a href="{{ route('staff-office.pengajuan-kasbon.index') }}">
           <i class='bx bx-money'></i>
-          <span class="links_name">Data Pengajuan Kasbon</span>
+          <span class="links_name">Pengajuan Kasbon</span>
         </a>
-        <span class="tooltip">Data Pengajuan Kasbon</span>
-      </li> --}}
+        <span class="tooltip">Pengajuan Kasbon</span>
+      </li>
       <li class="profile">
         <a href="{{ route(Auth::user()->role . '.profile') }}"> <!-- Tambahkan tautan ke halaman profil di sini -->
           <div class="profile-details">

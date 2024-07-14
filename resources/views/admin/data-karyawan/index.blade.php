@@ -46,6 +46,7 @@
                                     <th>Photo</th>
                                     <th>Nama</th>
                                     <th>Email</th>
+                                    <th>Role</th>
                                     <th>Position</th>
                                     <th>Action</th>
                                 </tr>
@@ -63,13 +64,14 @@
                                         </td>
                                         <td>{{ $user->nama }}</td>
                                         <td>{{ $user->email }}</td>
+                                        <td>{{ $user->role }}</td>
                                         <td>{{ $user->position }}</td>
                                         <td>
                                             <a href="{{ route('admin.data-karyawan.edit', $user->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                                            <form action="{{ route('admin.data-karyawan.destroy', $user->id) }}" method="POST" style="display: inline;">
+                                            <form id="deleteForm{{ $user->id }}" action="{{ route('admin.data-karyawan.destroy', $user->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ $user->id }}')">Delete</button>
                                             </form>
                                             <!-- Popup reset password -->
                                             <button type="button" class="btn btn-warning btn-sm" onclick="confirmReset('{{ route('admin.data-karyawan.reset-password', $user->id) }}')">Reset</button>
@@ -87,6 +89,17 @@
 
 <!-- SweetAlert2 library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+@if(session('success'))
+    <script>
+        Swal.fire({
+            title: 'Success',
+            text: '{{ session('success') }}',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
 
 <script>
     function confirmReset(url) {
@@ -109,6 +122,23 @@
                     text: 'Password berhasil direset!',
                     icon: 'success'
                 });
+            }
+        });
+    }
+
+    function confirmDelete(userId) {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: "Apakah Anda yakin ingin menghapus data ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit form delete
+                document.getElementById('deleteForm'+userId).submit();
             }
         });
     }

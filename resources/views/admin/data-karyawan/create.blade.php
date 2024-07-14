@@ -23,7 +23,9 @@
         font-weight: 500;
         margin: 5px;
     }
+    
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.29/dist/sweetalert2.min.css">
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -80,42 +82,20 @@
         </div>
     </div>
 </div>
+<!-- SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.29/dist/sweetalert2.min.js"></script>
+
+<!-- Script untuk menampilkan popup error jika validasi gagal -->
+@if ($errors->any())
+    <script>
+        Swal.fire({
+            title: 'Error',
+            text: '{{ $errors->first() }}',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    </script>
+@endif
 @endsection
 
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>
-    $(document).ready(function () {
-        $('#createForm').submit(function (event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            $.ajax({
-                url: $(this).attr('action'),
-                method: $(this).attr('method'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Data karyawan berhasil ditambahkan.',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        window.location.href = "{{ route('admin.data-karyawan.index') }}";
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Terjadi kesalahan. Silakan coba lagi.'
-                    });
-                }
-            });
-        });
-    });
-</script>
-@endsection
+

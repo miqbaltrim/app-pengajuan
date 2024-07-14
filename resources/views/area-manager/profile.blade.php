@@ -76,6 +76,18 @@
                             <button type="submit" class="btn btn-primary">Upload Profile Picture</button>
                         </form>
                     </div>
+                    <div class="card-header">Tanda Tangan</div>
+                    <div class="profile-picture">
+                        <img src="{{ asset(Auth::user()->ttd) }}" alt="Tanda Tangan" class="img-fluid">
+                    </div>
+                    <!-- Upload Button -->
+                    <div class="upload-button">
+                        <form action="{{ route('profile.upload_photo') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" name="ttd" class="form-control-file">
+                            <button type="submit" class="btn btn-primary">Upload Tanda Tangan</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6">

@@ -278,11 +278,28 @@ class PengajuanController extends Controller
     $diketahuiOleh = $pengajuan->diketahuiOleh->nama;
     $disetujuiOlehPosition = $pengajuan->disetujuiOleh->position;
     $diketahuiOlehPosition = $pengajuan->diketahuiOleh->position;
+    $disetujuiPhoto = $pengajuan->disetujuiOleh->photo;
+    $diketahuiPhoto = $pengajuan->diketahuiOleh->photo;
     $templateProcessor->setValue('DisetujuiOleh', $disetujuiOleh ?? 'User Tidak Ditemukan');
     $templateProcessor->setValue('DiketahuiOleh', $diketahuiOleh ?? 'User Tidak Ditemukan');
     $templateProcessor->setValue('PositionSetujui', $disetujuiOlehPosition ?? 'User Tidak Ditemukan');
     $templateProcessor->setValue('PositionKetahui', $diketahuiOlehPosition ?? 'User Tidak Ditemukan');
-
+    // Menambahkan placeholder untuk gambar TTD dan mengisi nilainya dengan path gambar TTD dari pengguna
+    $templateProcessor->setImageValue('TtdDibuat', [
+        'path' => $pengajuan->dibuatOleh->ttd, 
+        'width' => 100,
+        'height' => 100 
+    ]);
+    $templateProcessor->setImageValue('TtdSetujui', [
+        'path' => $pengajuan->disetujuiOleh->ttd, 
+        'width' => 100,
+        'height' => 100 
+    ]);
+    $templateProcessor->setImageValue('TtdKetahui', [
+        'path' => $pengajuan->diketahuiOleh->ttd, // Path gambar TTD pengguna yang diketahui
+        'width' => 100, // Lebar gambar dalam dokumen (opsional)
+        'height' => 100 // Tinggi gambar dalam dokumen (opsional)
+    ]);
     // Menambahkan teks tanggal
     $tanggal = date('d F Y'); // Format tanggal sesuai kebutuhan Anda
     $templateProcessor->setValue('Tanggal', $tanggal);
