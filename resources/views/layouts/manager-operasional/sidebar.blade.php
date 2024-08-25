@@ -301,6 +301,20 @@
           <span class="tooltip">Approve Cuti</span>
         </li>  
         <li>
+          <a href="{{ route('manager-operasional.izin.index') }}">
+            <i class='bx bx-folder-open' ></i>
+            <span class="links_name">Approve Izin</span>
+          </a>
+          <span class="tooltip">Approve Izin</span>
+        </li>  
+        <li>
+          <a href="{{ route('manager-operasional.sakit.index') }}">
+            <i class='bx bx-folder-open' ></i>
+            <span class="links_name">Approve Sakit</span>
+          </a>
+          <span class="tooltip">Approve Sakit</span>
+        </li>  
+        <li>
           <a href="/manager-operasional/approve/barang">
             <i class='bx bx-collection' ></i>
             <span class="links_name">Approve Barang</span>

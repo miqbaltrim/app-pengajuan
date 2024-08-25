@@ -71,6 +71,11 @@
                                 @endfor
                             </select>
                         </div>
+                        <!-- Bagian "Sisa Cicilan" -->
+                        <div class="mb-3">
+                            <label for="sisa_cicilan" class="form-label">Sisa Cicilan:</label>
+                            <input type="number" class="form-control" id="sisa_cicilan" name="sisa_cicilan" readonly>
+                        </div>
                         <!-- Bagian "Disetujui Oleh" -->
                         <div class="mb-3">
                             <label for="disetujui_oleh" class="form-label">Disetujui Oleh:</label>
@@ -78,7 +83,6 @@
                                 @foreach(['admin','direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
                                     <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                 @endforeach
-
                             </select>
                         </div>
                         <!-- Bagian "Diketahui Oleh" -->
@@ -100,4 +104,61 @@
         </div>
     </div>
 </div>
+
+<!-- Menyertakan SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Script untuk validasi jumlah kasbon dan menghitung sisa cicilan -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ambil data gaji dari elemen HTML atau variabel JavaScript
+        const gaji = {{ auth()->user()->gaji->gaji ?? 0 }}; // Pastikan gaji tersedia di sini
+        const totalKasbon = {{ $totalKasbon ?? 0 }}; // Total kasbon yang sudah diajukan
+        const form = document.getElementById('kasbon-form');
+        const jmlKasbonInput = document.getElementById('jml_kasbon');
+        const cicilanSelect = document.getElementById('cicilan');
+        const sisaCicilanInput = document.getElementById('sisa_cicilan');
+
+        // Fungsi untuk menghitung sisa cicilan
+        function hitungSisaCicilan() {
+            const jmlKasbon = parseFloat(jmlKasbonInput.value);
+            const cicilan = parseInt(cicilanSelect.value);
+            if (!isNaN(jmlKasbon) && !isNaN(cicilan) && cicilan > 0) {
+                const sisaCicilan = jmlKasbon / cicilan;
+                sisaCicilanInput.value = sisaCicilan.toFixed(2);
+            } else {
+                sisaCicilanInput.value = '';
+            }
+        }
+
+        jmlKasbonInput.addEventListener('input', hitungSisaCicilan);
+        cicilanSelect.addEventListener('change', hitungSisaCicilan);
+
+        form.addEventListener('submit', function (e) {
+            const jmlKasbon = parseFloat(jmlKasbonInput.value);
+
+            // Cek apakah jumlah kasbon baru melebihi sisa gaji
+            if (jmlKasbon + totalKasbon > gaji) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Jumlah total kasbon tidak boleh melebihi gaji.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            } else if (jmlKasbon === gaji) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Maaf, pengajuan tidak boleh sama dengan gaji Anda.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+</script>
 @endsection

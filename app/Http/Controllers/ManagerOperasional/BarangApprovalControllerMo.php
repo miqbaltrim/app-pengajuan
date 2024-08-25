@@ -22,7 +22,15 @@ class BarangApprovalControllerMo extends Controller
             })
             ->get();
 
-        return view('manager-operasional.approve.barang', compact('pengajuanBarang'));
+            // Ambil riwayat pengajuan barang yang sudah diproses
+        $riwayatPengajuan = Pengajuan::with('user')
+        ->where(function ($query) {
+            $query->where('setujui', '!=', 'tunggu')
+                  ->orWhere('ketahui', '!=', 'tunggu');
+        })
+        ->get();
+
+        return view('manager-operasional.approve.barang', compact('pengajuanBarang', 'riwayatPengajuan'));
     }
 
     public function detail($id)

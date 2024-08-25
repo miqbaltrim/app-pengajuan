@@ -46,10 +46,10 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-          <div class="jumbotron jumbotron-bg">
-            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
-            <p id="current-date">tanggal</p> 
-          </div>
+            <div class="jumbotron jumbotron-bg">
+                <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+                <p id="current-date">tanggal</p> 
+            </div>
         </div>
     </div>
       
@@ -61,7 +61,7 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        @if($totalCuti > 0)
+                        @if($remainingCuti > 0)
                             <a href="{{ route('staff-office.pengajuan-cuti.create') }}" class="btn btn-success">Ajukan Cuti</a>
                         @else
                             <p>Maaf, Anda tidak memiliki cuti tersisa.</p>
@@ -71,7 +71,7 @@
                             </form>
                         @endif
                         <div class="text" style="position: absolute; top: 10px; right: 10px;">
-                            Jumlah Cuti: {{ $totalCuti }}
+                            Sisa Cuti: {{ $remainingCuti }}
                         </div>
                     </div>
                     
@@ -98,17 +98,34 @@
                                     <td>{{ $ajucuti->alasan }}</td>
                                     <td>{{ $ajucuti->status }}</td>
                                     <td>
-                                        @if($ajucuti->status != 'ditolak' && $ajucuti->status == 'disetujui')
+                                        @if($ajucuti->status == 'disetujui' || $ajucuti->status == 'selesai')
                                             <a href="{{ route('staff-office.pengajuan-cuti.view', $ajucuti->id) }}" class="btn btn-success btn-sm">View</a>
                                         @endif
-                                        @if($ajucuti->status != 'ditolak' && $ajucuti->status != 'disetujui')
+                                        @if($ajucuti->status == 'tunggu')
                                             <a href="{{ route('staff-office.pengajuan-cuti.edit', $ajucuti->id) }}" class="btn btn-primary btn-sm">Edit</a>
                                             <form action="{{ route('staff-office.pengajuan-cuti.destroy', $ajucuti->id) }}" method="POST" style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm delete-btn">Delete</button>
                                             </form>
+                                            <a href="https://wa.me/?text={{ rawurlencode(
+                                                'Notifikasi Pengajuan Cuti dari *' . $ajucuti->user->nama . "*\n" .
+                                                '--------------------------------'. "\n" .
+                                                '*Tanggal:* ' . $ajucuti->created_at->format('Y-m-d') . "\n" .
+                                                '*Mulai:* ' . $ajucuti->mulai_cuti . "\n" .
+                                                '*Selesai:* ' . $ajucuti->selesai_cuti . "\n" .
+                                                '*Alasan:* ' . substr($ajucuti->alasan, 0, 30) ."\n" .
+                                                '*Status:* ' . $ajucuti->status . "\n\n" .
+                                                'Link ke Detail: http://127.0.0.1:8000/login'
+                                            ) }}" class="btn btn-info btn-sm">Kirim ke Manager</a>
                                         @endif
+                                        @if ($ajucuti->status == 'ditolak')
+    <form action="{{ route('staff-office.pengajuan-cuti.resubmit', $ajucuti->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        <button type="submit" class="btn btn-primary">Ajukan Kembali</button>
+    </form>
+@endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -143,22 +160,21 @@
         }
     });
 
-    // JavaScript untuk konfirmasi penghapusan
+    // JavaScript untuk penghapusan tanpa konfirmasi dan menampilkan popup
     document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const form = this.closest('.delete-form');
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Mencegah pengiriman form default
+            const form = this.closest('form'); // Selector yang benar untuk form
+            form.submit();
+
+            // Menampilkan popup sukses setelah pengiriman form
             Swal.fire({
-                title: 'Anda yakin?',
-                text: "Pengajuan cuti akan dihapus dan tidak bisa dikembalikan!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Pengajuan cuti telah dihapus.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                location.reload(); // Memuat ulang halaman setelah popup ditutup
             });
         });
     });

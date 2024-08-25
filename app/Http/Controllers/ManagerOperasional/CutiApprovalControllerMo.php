@@ -19,12 +19,17 @@ class CutiApprovalControllerMo extends Controller
         }
 
         // Mendapatkan daftar pengajuan cuti yang belum disetujui dan sesuai dengan peran pengguna yang sedang login
-        $ajucutis = Ajucuti::whereIn('status', ['tunggu', 'disetujui', 'ditolak'])
+        $ajucutis = Ajucuti::where('status', 'tunggu')
                             ->where('approved', Auth::user()->role)
                             ->get();
 
+        // Mendapatkan daftar riwayat pengajuan cuti yang sudah disetujui atau ditolak
+        $riwayatCutis = Ajucuti::whereIn('status', ['disetujui', 'ditolak'])
+                                ->where('approved', Auth::user()->role)
+                                ->get();
+
         // Menampilkan view approve/cuti.blade.php di dalam direktori manager-operasional
-        return view('manager-operasional.approve.cuti', compact('ajucutis'));
+        return view('manager-operasional.approve.cuti', compact('ajucutis', 'riwayatCutis'));
     }
 
     public function approve(Request $request, $id)

@@ -21,6 +21,8 @@ class CreatePengajuansTable extends Migration
             $table->unsignedBigInteger('diketahui_oleh')->nullable();
             $table->enum('setujui', ['tunggu', 'diterima', 'ditolak'])->default('tunggu');
             $table->enum('ketahui', ['tunggu', 'diterima', 'ditolak'])->default('tunggu');
+            $table->string('alasan');
+            $table->string('bukti_nota');
             $table->timestamps();
 
             // Menambahkan foreign key constraints

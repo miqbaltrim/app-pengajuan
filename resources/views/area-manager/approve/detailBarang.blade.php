@@ -98,6 +98,10 @@
                                     <td>{{ 'Rp ' . number_format($totalPengajuan, 0, ',', '.') }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Alasan:</th>
+                                    <td>{{ $pengajuan->alasan }}</td>
+                                </tr>
+                                <tr>
                                     <th>Disetujui Oleh:</th>
                                     <td>{{ $pengajuan->disetujuiOleh->nama }}</td>
                                 </tr>

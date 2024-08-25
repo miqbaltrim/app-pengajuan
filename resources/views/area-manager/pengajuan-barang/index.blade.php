@@ -53,9 +53,29 @@
     .inactive a {
         color: #000; /* warna teks hitam untuk yang tidak aktif */
     }
-
+    .jumbotron-bg {
+        background-color: #f8f9fa; /* Warna latar belakang */
+        border-radius: 15px; /* Sudut bulat */
+        padding: 20px; /* Padding */
+        margin-bottom: 10px; /* Margin bawah */
+        margin-left: 10px; /* Margin kiri */
+        margin-right: 10px; /* Margin kanan */
+        display: flex; /* Gunakan fleksibel layout */
+        justify-content: space-between; /* Posisikan teks di ujung kiri dan kanan */
+        align-items: center; /* Posisikan teks di tengah secara vertikal */
+        height: 60px;
+        margin-top: 25px; /* Tinggi jumbotron */
+    }
 </style>
 <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+          <div class="jumbotron jumbotron-bg">
+            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+            <p id="current-date">tanggal</p> 
+          </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -152,4 +172,14 @@
         </div>
     </div>
 </div>
+<script>
+    // Mendapatkan elemen untuk tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    // Mendapatkan tanggal hari ini
+    const currentDate = new Date();
+    // Mendapatkan string tanggal dengan format tertentu
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Menampilkan tanggal terkini pada elemen currentDateElement
+    currentDateElement.textContent = dateString;
+</script>
 @endsection

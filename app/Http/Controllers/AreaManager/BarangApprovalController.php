@@ -18,11 +18,19 @@ class BarangApprovalController extends Controller
         $pengajuanBarang = Pengajuan::with('user')
             ->where(function ($query) {
                 $query->where('setujui', 'tunggu')
-                    ->orWhere('ketahui', 'tunggu');
+                      ->orWhere('ketahui', 'tunggu');
             })
             ->get();
 
-        return view('area-manager.approve.barang', compact('pengajuanBarang'));
+        // Ambil riwayat pengajuan barang yang sudah diproses
+        $riwayatPengajuan = Pengajuan::with('user')
+            ->where(function ($query) {
+                $query->where('setujui', '!=', 'tunggu')
+                      ->orWhere('ketahui', '!=', 'tunggu');
+            })
+            ->get();
+
+        return view('area-manager.approve.barang', compact('pengajuanBarang', 'riwayatPengajuan'));
     }
 
     public function detail($id)
@@ -68,5 +76,4 @@ class BarangApprovalController extends Controller
 
         return redirect()->back()->with('success', 'Pengajuan ditolak.');
     }
-    
 }

@@ -308,7 +308,7 @@
           <span class="tooltip">Database Gaji</span>
         </li>  
         <li>
-          <a href="">
+          <a href="{{ route('manager-keuangan.data-kasbon.index') }}">
             <i class='bx bx-money' ></i>
             <span class="links_name">Data Kasbon</span>
           </a>

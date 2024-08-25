@@ -52,8 +52,29 @@
         top: 10px;
         right: 10px;
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 60px;
+        margin-top: 25px;
+    }
 </style>
 <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron jumbotron-bg">
+                <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+                <p id="current-date">tanggal</p> 
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -65,6 +86,10 @@
                     <div>
                         <table class="table">
                             <tbody>
+                                <tr>
+                                    <th>Tanggal Pengajuan:</th>
+                                    <td>{{ \Carbon\Carbon::parse($pengajuan->created_at)->format('Y-m-d') }}</td>
+                                </tr>
                                 <tr>
                                     <th>Nama Karyawan:</th>
                                     <td>{{ $pengajuan->user->nama }}</td>
@@ -105,12 +130,25 @@
                                     <td>{{ 'Rp ' . number_format($totalPengajuan, 0, ',', '.') }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Alasan:</th>
+                                    <td>{{ $pengajuan->alasan }}</td>
+                                </tr>
+                                <tr>
                                     <th>Disetujui Oleh:</th>
                                     <td>{{ $pengajuan->disetujuiOleh->nama }}</td>
                                 </tr>
                                 <tr>
                                     <th>Diketahui Oleh:</th>
                                     <td>{{ $pengajuan->diketahuiOleh->nama }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bukti Nota & Barang:</th>
+                                    <td><!-- Tampilkan link untuk melihat file nota jika ada -->
+                                        @if($pengajuan->bukti_nota)
+                                            <a href="{{ asset('storage/' . $pengajuan->bukti_nota) }}" target="_blank" class="btn btn-success btn-sm">Lihat Nota</a>
+                                        @else
+                                            <span class="text-danger">Belum Ada Nota</span>
+                                        @endif</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -135,5 +173,11 @@
         console.log('Aksi:', action);
     }
 </script>
-
+<script>
+    // Mendapatkan elemen untuk tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    const currentDate = new Date();
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    currentDateElement.textContent = dateString;
+</script>
 @endsection

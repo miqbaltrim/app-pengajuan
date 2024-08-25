@@ -29,8 +29,30 @@
     .card {
         margin-top: 20px;
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa; /* Warna latar belakang */
+        border-radius: 15px; /* Sudut bulat */
+        padding: 20px; /* Padding */
+        margin-bottom: 10px; /* Margin bawah */
+        margin-left: 10px; /* Margin kiri */
+        margin-right: 10px; /* Margin kanan */
+        display: flex; /* Gunakan fleksibel layout */
+        justify-content: space-between; /* Posisikan teks di ujung kiri dan kanan */
+        align-items: center; /* Posisikan teks di tengah secara vertikal */
+        height: 60px;
+        margin-top: 25px; /* Tinggi jumbotron */
+    }
 </style>
 <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+          <div class="jumbotron jumbotron-bg">
+            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+            <p id="current-date">tanggal</p> 
+          </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -86,6 +108,16 @@
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>
+                                            <a href="https://wa.me/?text={{ rawurlencode(
+                                                'Notifikasi Pengajuan Cuti dari *' . $ajucuti->user->nama . "*\n" .
+                                                '--------------------------------'. "\n" .
+                                                '*Tanggal:* ' . $ajucuti->created_at->format('Y-m-d') . "\n" .
+                                                '*Mulai:* ' . $ajucuti->mulai_cuti . "\n" .
+                                                '*Selesai:* ' . $ajucuti->selesai_cuti . "\n" .
+                                                '*Alasan:* ' . substr($ajucuti->alasan, 0, 30) ."\n" .
+                                                '*Status:* ' . $ajucuti->status . "\n\n" .
+                                                'Link ke Detail: http://127.0.0.1:8000/login'
+                                            ) }}" class="btn btn-info btn-sm">Kirim ke Manager</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -98,4 +130,14 @@
         </div>
     </div>
 </div>
+<script>
+    // Mendapatkan elemen untuk tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    // Mendapatkan tanggal hari ini
+    const currentDate = new Date();
+    // Mendapatkan string tanggal dengan format tertentu
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Menampilkan tanggal terkini pada elemen currentDateElement
+    currentDateElement.textContent = dateString;
+</script>
 @endsection

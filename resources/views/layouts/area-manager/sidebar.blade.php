@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
+
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -287,11 +287,32 @@
           <span class="tooltip">Data Pengajuan Barang</span>
         </li>  
         <li>
+          <a href="{{ route('area-manager.pengajuan-kasbon.index') }}">
+            <i class='bx bx-money'></i>
+            <span class="links_name">Pengajuan Kasbon</span>
+          </a>
+          <span class="tooltip">Pengajuan Kasbon</span>
+        </li> 
+        <li>
           <a href="{{ route('area-manager.approve.cuti') }}">
             <i class='bx bx-folder-open' ></i>
             <span class="links_name">Approve Cuti</span>
           </a>
           <span class="tooltip">Approve Cuti</span>
+        </li> 
+        <li>
+          <a href="{{ route('area-manager.izin.index') }}">
+            <i class='bx bx-folder-open' ></i>
+            <span class="links_name">Approve Izin</span>
+          </a>
+          <span class="tooltip">Approve Izin</span>
+        </li>  
+        <li>
+          <a href="{{ route('area-manager.sakit.index') }}">
+            <i class='bx bx-folder-open' ></i>
+            <span class="links_name">Approve Sakit</span>
+          </a>
+          <span class="tooltip">Approve Sakit</span>
         </li>  
         <li>
           <a href="/area-manager/approve/barang">

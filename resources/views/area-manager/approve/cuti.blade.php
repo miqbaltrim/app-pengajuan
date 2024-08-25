@@ -26,7 +26,29 @@
     .card {
         margin-top: 20px;
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 60px;
+        margin-top: 25px;
+    }
 </style>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron jumbotron-bg">
+                <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+                <p id="current-date">tanggal</p> 
+            </div>
+        </div>
+    </div>
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -76,6 +98,42 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Tabel Riwayat Pengajuan Cuti -->
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h5 class="card-title">Riwayat Pengajuan Cuti</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Karyawan</th>
+                                    <th>Mulai Cuti</th>
+                                    <th>Selesai Cuti</th>
+                                    <th>Alasan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($riwayatCutis as $ajucuti)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $ajucuti->user->nama }}</td>
+                                    <td>{{ $ajucuti->mulai_cuti }}</td>
+                                    <td>{{ $ajucuti->selesai_cuti }}</td>
+                                    <td>{{ $ajucuti->alasan }}</td>
+                                    <td>{{ ucfirst($ajucuti->status) }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -117,5 +175,13 @@
             }
         });
     }
+
+    // Mendapatkan elemen untuk tanggal terkini
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentDateElement = document.getElementById('current-date');
+        const currentDate = new Date();
+        const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        currentDateElement.textContent = dateString;
+    });
 </script>
 @endsection

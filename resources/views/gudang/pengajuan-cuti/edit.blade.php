@@ -45,7 +45,7 @@
                             {{ session('error') }}
                         </div>
                     @endif
-                    <form action="{{ route('gudang.pengajuan-cuti.update', $ajucuti->id) }}" method="POST">
+                    <form id="cutiForm" action="{{ route('gudang.pengajuan-cuti.update', $ajucuti->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
@@ -75,9 +75,37 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Update Pengajuan Cuti</button>
                     </form>
+
+                    @if ($ajucuti->status == 'ditolak')
+                        <form action="{{ route('gudang.pengajuan-cuti.resubmit', $ajucuti->id) }}" method="POST" class="mt-3">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning">Ajukan Kembali</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cutiForm = document.getElementById('cutiForm');
+        cutiForm.addEventListener('submit', function (event) {
+            const mulaiCuti = new Date(document.getElementById('mulai_cuti').value);
+            const selesaiCuti = new Date(document.getElementById('selesai_cuti').value);
+
+            if (selesaiCuti < mulaiCuti) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan',
+                    text: 'Tanggal selesai cuti harus sama atau setelah tanggal mulai cuti.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+</script>
 @endsection

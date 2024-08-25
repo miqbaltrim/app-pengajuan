@@ -40,6 +40,14 @@ class Ajucuti extends Model
     return $totalCuti;
 }
 
+public function approved()
+    {
+        return $this->belongsTo(User::class, 'approved');
+    }
 
+    public function approvedBy()
+{
+    return $this->belongsTo(User::class, 'approved');
+}
 
 }

@@ -38,9 +38,15 @@ class KasbonApprovalControllerMO extends Controller
                       ->where('diketahui_oleh', $user->id);
                 });
             })->get();
+            // Ambil riwayat kasbon yang sudah disetujui atau ditolak
+        $kasbonHistory = Kasbon::with(['user', 'disetujuiOleh', 'diketahuiOleh'])
+        ->where(function ($query) use ($user) {
+            $query->where('setujui', '!=', 'tunggu')
+                  ->orWhere('ketahui', '!=', 'tunggu');
+        })->get();
 
         // Kembalikan view dengan data pengajuan kasbon yang telah diambil
-        return view('manager-operasional.approve.kasbon', compact('kasbons'));
+        return view('manager-operasional.approve.kasbon', compact('kasbons', 'kasbonHistory'));
     }
 
     public function disetujuiTerima($id)

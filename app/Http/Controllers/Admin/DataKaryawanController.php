@@ -15,10 +15,26 @@ class DataKaryawanController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-    {
-        $users = User::all();
-        return view('admin.data-karyawan.index', compact('users'));
-    }
+{
+    $roleOrder = [
+        'admin',
+        'direktur',
+        'manager-operasional',
+        'manager-territory',
+        'manager-keuangan',
+        'area-manager',
+        'kepala-cabang',
+        'kepala-gudang',
+        'staff-office',
+        'gudang'
+    ];
+
+    $users = User::all()->sortBy(function($user) use ($roleOrder) {
+        return array_search($user->role, $roleOrder);
+    });
+
+    return view('admin.data-karyawan.index', compact('users'));
+}
 
     public function create()
     {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
+
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -278,6 +278,20 @@
           <span class="links_name">Pengajuan Cuti</span>
         </a>
         <span class="tooltip">Pengajuan Cuti</span>
+      </li>
+      <li>
+        <a href="/staff-office/pengajuan-izin">
+          <i class='bx bx-file'></i>
+          <span class="links_name">Pengajuan Izin Kerja</span>
+        </a>
+        <span class="tooltip">Pengajuan Izin Kerja</span>
+      </li>
+      <li>
+        <a href="/staff-office/pengajuan-sakit">
+          <i class='bx bx-file'></i>
+          <span class="links_name">Pengajuan Izin Sakit</span>
+        </a>
+        <span class="tooltip">Pengajuan Izin Sakit</span>
       </li>
       <li>
         <a href="{{ route('staff-office.pengajuan-barang.index') }}">

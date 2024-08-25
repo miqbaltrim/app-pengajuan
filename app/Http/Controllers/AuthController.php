@@ -62,6 +62,9 @@ class AuthController extends Controller
             case 'manager-keuangan':
                 return redirect()->route('manager-keuangan.dashboard');
                 break;
+            case 'kepala-gudang':
+                return redirect()->route('kepala-gudang.dashboard');
+                break;
             case 'staff-office':
                 return redirect()->route('staff-office.dashboard');
                 break;
@@ -135,6 +138,14 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout(); // Melakukan logout pengguna
-        return redirect()->route('login')->with('success', 'Logout berhasil.');
+
+        // Menambahkan header untuk membersihkan cache
+        return redirect()->route('login')
+            ->with('success', 'Logout berhasil.')
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+            ]);
     }
 }

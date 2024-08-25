@@ -38,6 +38,11 @@ class ProfileController extends Controller
                 return view('manager-keuangan.profile');
                 break;
 
+            case 'kepala-gudang':
+                // Logika untuk profil admin
+                return view('kepala-gudang.profile');
+                break;
+
             case 'staff-office':
                 // Logika untuk profil admin
                 return view('staff-office.profile');

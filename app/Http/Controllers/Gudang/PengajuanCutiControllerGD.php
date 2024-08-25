@@ -276,6 +276,15 @@ public function reset()
         return redirect()->route('gudang.pengajuan-cuti.index')->with('error', 'Anda tidak memiliki izin untuk menyetujui pengajuan cuti ini.');
     }
 
+    public function resubmit(Request $request, $id)
+{
+    $ajucuti = Ajucuti::findOrFail($id);
+    $ajucuti->status = 'tunggu';
+    $ajucuti->save();
+
+    return redirect()->route('gudang.pengajuan-cuti.edit', $ajucuti->id)->with('success', 'Pengajuan cuti berhasil diajukan kembali. Silakan perbarui data cuti jika diperlukan.');
+}
+
     public function view($id)
 {
     // Temukan pengajuan cuti berdasarkan ID

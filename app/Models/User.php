@@ -71,5 +71,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(Gaji::class);
     }
+    public function izins()
+    {
+        return $this->hasMany(Izin::class, 'dibuat_oleh');
+    }
+    public function sakits()
+    {
+        return $this->hasMany(Izin::class, 'dibuat_oleh');
+    }
 
 }

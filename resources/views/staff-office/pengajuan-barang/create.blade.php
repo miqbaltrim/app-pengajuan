@@ -28,7 +28,7 @@
 
     .card {
         margin-top: 20px;
-        position: relative; /* menambahkan positioning ke card */
+        position: relative;
     }
 
     .undo-button {
@@ -38,7 +38,7 @@
     }
 
     .barang-field {
-        margin-bottom: 20px; /* tambahkan margin bottom agar ada ruang antara setiap bidang */
+        margin-bottom: 20px;
     }
 </style>
 <div class="container">
@@ -65,7 +65,6 @@
                         <div class="mb-3">
                             <label for="disetujui_oleh" class="form-label">Disetujui Oleh:</label>
                             <select class="form-select" id="disetujui_oleh" name="disetujui_oleh" required>
-                                <!-- Tampilkan opsi berdasarkan daftar peran -->
                                 @foreach(['direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
                                     <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                 @endforeach
@@ -76,13 +75,18 @@
                         <div class="mb-3">
                             <label for="diketahui_oleh" class="form-label">Diketahui Oleh:</label>
                             <select class="form-select" id="diketahui_oleh" name="diketahui_oleh" required>
-                                <!-- Tampilkan opsi berdasarkan daftar peran -->
                                 @foreach(['direktur','manager-operasional','manager-territory','manager-keuangan','area-manager','kepala-cabang','kepala-gudang'] as $role)
                                     <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                 @endforeach
                             </select>
                         </div>
                         
+                        <!-- Bagian "Alasan" -->
+                        <div class="mb-3">
+                            <label for="alasan" class="form-label">Alasan:</label>
+                            <textarea class="form-control" id="alasan" name="alasan" required></textarea>
+                        </div>
+
                         <!-- Tambahkan bidang input untuk setiap barang -->
                         <div id="barang-fields">
                             <div class="barang-field">
@@ -120,64 +124,50 @@
 </div>
 <script>
     document.getElementById('add-barang').addEventListener('click', function() {
-    var field = document.querySelector('.barang-field').cloneNode(true);
-    // Bersihkan nilai bidang input
-    field.querySelectorAll('input').forEach(function(input) {
-        input.value = '';
+        var field = document.querySelector('.barang-field').cloneNode(true);
+        field.querySelectorAll('input').forEach(function(input) {
+            input.value = '';
+        });
+        document.getElementById('barang-fields').appendChild(field);
+        bindEventListeners();
     });
-    document.getElementById('barang-fields').appendChild(field);
-    
-    // Panggil fungsi untuk mengikat event listener pada input baru
+
+    function bindEventListeners() {
+        var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
+        var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
+        
+        qtyInputs.forEach(function(qtyInput, index) {
+            qtyInput.addEventListener('input', function() {
+                updateTotal(index);
+            });
+        });
+        
+        hargaSatuanInputs.forEach(function(hargaSatuanInput, index) {
+            hargaSatuanInput.addEventListener('input', function() {
+                updateTotal(index);
+            });
+        });
+    }
+
+    function updateTotal(index) {
+        var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
+        var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
+        var totalInputs = document.querySelectorAll('.total');
+        
+        var qty = parseFloat(qtyInputs[index].value);
+        var hargaSatuan = parseFloat(hargaSatuanInputs[index].value);
+        var total = qty * hargaSatuan;
+        totalInputs[index].value = total.toFixed(2);
+    }
+
     bindEventListeners();
-});
 
-// Fungsi untuk mengikat event listener pada setiap input
-function bindEventListeners() {
-    var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
-    var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
-    
-    qtyInputs.forEach(function(qtyInput, index) {
-        qtyInput.addEventListener('input', function() {
-            updateTotal(index);
-        });
+    document.getElementById('undo').addEventListener('click', function() {
+        var lastField = document.querySelector('#barang-fields .barang-field:last-child');
+        if (lastField) {
+            lastField.remove();
+        }
     });
-    
-    hargaSatuanInputs.forEach(function(hargaSatuanInput, index) {
-        hargaSatuanInput.addEventListener('input', function() {
-            updateTotal(index);
-        });
-    });
-}
-
-// Fungsi untuk menghitung total
-function updateTotal(index) {
-    var qtyInputs = document.querySelectorAll('input[name="qty[]"]');
-    var hargaSatuanInputs = document.querySelectorAll('input[name="harga_satuan[]"]');
-    var totalInputs = document.querySelectorAll('.total');
-    
-    var qty = parseFloat(qtyInputs[index].value);
-    var hargaSatuan = parseFloat(hargaSatuanInputs[index].value);
-    var total = qty * hargaSatuan;
-    totalInputs[index].value = total.toFixed(2);
-}
-
-// Panggil fungsi untuk mengikat event listener pada input yang sudah ada saat halaman dimuat
-bindEventListeners();
-
-document.getElementById('undo').addEventListener('click', function() {
-    var lastField = document.querySelector('#barang-fields .barang-field:last-child');
-    if (lastField) {
-        lastField.remove();
-    }
-});
-
-function padWithZeroes(number, length) {
-    var padded = number.toString();
-    while (padded.length < length) {
-        padded = '0' + padded;
-    }
-    return padded;
-}
 </script>
 
 @endsection

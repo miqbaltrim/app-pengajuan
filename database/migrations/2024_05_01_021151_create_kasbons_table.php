@@ -20,6 +20,7 @@ class CreateKasbonsTable extends Migration
             $table->string('keterangan');
             $table->decimal('jml_kasbon', 20, 2);
             $table->integer('cicilan');
+            $table->decimal('sisa_cicilan', 20, 2);
             $table->enum('dana_dari', ['CBA', 'CBM', 'CBS', 'CBU', 'ABJ', 'DANWIL'])->nullable();
             
             $table->unsignedBigInteger('disetujui_oleh'); // Foreign key terhubung dengan tabel users
@@ -29,6 +30,7 @@ class CreateKasbonsTable extends Migration
             
             $table->enum('setujui', ['tunggu', 'diterima', 'ditolak'])->default('tunggu');
             $table->enum('ketahui', ['tunggu', 'diterima', 'ditolak'])->default('tunggu');
+            $table->enum('status_cicilan', ['belum lunas', 'lunas'])->default('belum lunas');
             $table->timestamps();
         });
     }

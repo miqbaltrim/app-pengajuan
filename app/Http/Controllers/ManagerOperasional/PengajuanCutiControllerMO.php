@@ -307,7 +307,11 @@ public function reset()
     $templateProcessor->setValue('durasi_cuti', $durasiCuti); // Menampilkan durasi cuti dalam hari
     $templateProcessor->setValue('tanggal_kembali', $tanggalKembali); // Menampilkan tanggal kembali bekerja
     $templateProcessor->setValue('created_at', strftime('%d %B %Y', strtotime($ajucuti->created_at))); 
-
+    $templateProcessor->setImageValue('ttd', [
+        'path' => $ajucuti->user->ttd, 
+        'width' => 100,
+        'height' => 100 
+    ]);
     // Path untuk menyimpan file
     $fileName = 'Surat_Pengajuan_Cuti_' . $ajucuti->id . '.docx';
     $filePath = public_path('surat_pengajuan_cuti/' . $fileName);

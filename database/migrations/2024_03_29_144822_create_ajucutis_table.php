@@ -14,7 +14,7 @@ class CreateAjucutisTable extends Migration
             $table->date('mulai_cuti');
             $table->date('selesai_cuti');
             $table->text('alasan');
-            $table->enum('status', ['tunggu', 'disetujui', 'ditolak'])->default('tunggu');
+            $table->enum('status', ['tunggu', 'disetujui', 'ditolak', 'selesai'])->default('tunggu');
             $table->enum('approved', ['admin', 'direktur', 'manager-operasional', 'manager-territory', 'manager-keuangan', 'area-manager', 'kepala-cabang', 'kepala-gudang', 'staff-office', 'gudang'])->nullable();
             $table->integer('jml_cuti')->nullable();
             $table->timestamps();

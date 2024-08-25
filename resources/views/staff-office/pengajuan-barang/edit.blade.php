@@ -114,6 +114,11 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="alasan" class="form-label">Alasan:</label>
+                            <textarea class="form-control" id="alasan" name="alasan" required></textarea>
+                        </div>
   
                         <!-- Tambahkan bidang input untuk setiap barang -->
                         <div id="barang-fields" data-barangs="{{ json_encode($pengajuan->barangs) }}">

@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Created by CodingLab |www.youtube.com/CodingLabYT-->
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
@@ -26,9 +25,11 @@
       padding: 6px 14px;
       z-index: 99;
       transition: all 0.5s ease;
+      overflow-y: auto; /* Menambahkan fitur scroll vertikal */
     }
     .sidebar.open{
       width: 260px;
+      overflow-y: auto; /* Menambahkan fitur scroll vertikal */
       
     }
     .sidebar .logo-details{
@@ -89,7 +90,7 @@
     .sidebar .nav-list {
         margin-top: 20px;
         height: 100%;
-        margin-left: -20px; /* Menyesuaikan margin kiri */
+        margin-left: -33px; /* Menyesuaikan margin kiri */
     }
 
     .sidebar li{
@@ -287,12 +288,34 @@
         <span class="tooltip">Laporan Cuti</span>
       </li>
       <li>
+        <a href="{{ route('admin.laporan-izin.index') }}">
+          <i class='bx bx-folder' ></i>
+          <span class="links_name">Laporan Izin</span>
+        </a>
+        <span class="tooltip">Laporan Izin</span>
+      </li>
+      <li>
+        <a href="{{ route('admin.laporan-sakit.index') }}">
+          <i class='bx bx-folder' ></i>
+          <span class="links_name">Laporan Sakit</span>
+        </a>
+        <span class="tooltip">Laporan Sakit</span>
+      </li>
+      <li>
         <a href="{{ route('admin.laporan-barang.index') }}">
           <i class='bx bx-package' ></i>
           <span class="links_name">Data Pengajuan Barang</span>
         </a>
         <span class="tooltip">Data Pengajuan Barang</span>
       </li>
+      <li>
+        <a href="{{ route('admin.laporan-kasbon.index') }}">
+          <i class='bx bx-package' ></i>
+          <span class="links_name">Data Pengajuan Kasbon</span>
+        </a>
+        <span class="tooltip">Data Pengajuan Kasbon</span>
+      </li>
+      
       <li class="profile">
         <a href="{{ route(Auth::user()->role . '.profile') }}"> <!-- Tambahkan tautan ke halaman profil di sini -->
           <div class="profile-details">

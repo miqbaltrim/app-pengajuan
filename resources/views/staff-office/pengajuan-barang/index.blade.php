@@ -91,13 +91,14 @@
                                 <tr>
                                     <th>Nomor</th>
                                     <th>Nomor Referensi</th>
-                                    <th>Dibuat Oleh</th>
                                     <th>Disetujui Oleh</th>
                                     <th>Diketahui Oleh</th>
                                     <th>Daftar Barang</th>
                                     <th>Approve Disetujui</th>
                                     <th>Approve Diketahui</th>
+                                    <th>Alasan</th>
                                     <th>Actions</th>
+                                    <th>File Nota</th> <!-- Tambahkan kolom untuk melihat file nota -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,7 +109,6 @@
                                     <tr>
                                         <td>{{ $startNumber++ }}</td>
                                         <td>{{ $pengajuan->nomor_referensi }}</td>
-                                        <td>{{ $pengajuan->dibuatOleh->nama ?? 'User Tidak Ditemukan' }}</td> <!-- Menampilkan nama pengguna yang membuat pengajuan -->
                                         <td>{{ $pengajuan->disetujuiOleh->role ?? 'User Tidak Ditemukan' }}</td>
                                         <td>{{ $pengajuan->diketahuiOleh->role ?? 'User Tidak Ditemukan' }}</td>
                                         <td>
@@ -121,6 +121,7 @@
                                         </td>
                                         <td>{{ $pengajuan->setujui }}</td>
                                         <td>{{ $pengajuan->ketahui }}</td>
+                                        <td>{{ $pengajuan->alasan }}</td>
                                         <td>
                                             <!-- Tambahkan tautan edit dan formulir hapus hanya jika pengajuan belum disetujui atau belum diketahui -->
                                             @if($pengajuan->setujui !== 'diterima' || $pengajuan->ketahui !== 'diterima')
@@ -138,6 +139,21 @@
                                             <!-- Tambahkan tautan download surat jika sudah disetujui semua -->
                                             @if($pengajuan->setujui === 'diterima' && $pengajuan->ketahui === 'diterima')
                                                 <a href="{{ route('staff-office.pengajuan-barang.download-surat', $pengajuan->id) }}" class="btn btn-info btn-sm">Download Surat</a>
+
+                                                <!-- Tambahkan Form Upload Nota -->
+                                                <form action="{{ route('staff-office.pengajuan-barang.upload-nota', $pengajuan->id) }}" method="POST" enctype="multipart/form-data" style="display: inline;">
+                                                    @csrf
+                                                    <input type="file" name="bukti_nota" accept="application/pdf" style="display: none;" id="uploadNota{{ $pengajuan->id }}" onchange="this.form.submit()">
+                                                    <label for="uploadNota{{ $pengajuan->id }}" class="btn btn-warning btn-sm" style="cursor: pointer;">Upload Nota</label>
+                                                </form>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <!-- Tampilkan link untuk melihat file nota jika ada -->
+                                            @if($pengajuan->bukti_nota)
+                                                <a href="{{ asset('storage/' . $pengajuan->bukti_nota) }}" target="_blank" class="btn btn-success btn-sm">Lihat Nota</a>
+                                            @else
+                                                <span class="text-danger">Belum Ada Nota</span>
                                             @endif
                                         </td>
                                     </tr>

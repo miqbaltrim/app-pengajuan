@@ -2,7 +2,7 @@
 
 @section('content')
 <style>
-    .main-panel{
+    .main-panel {
         position: relative;
         background: #E4E9F7;
         min-height: 100vh;
@@ -12,11 +12,19 @@
         transition: all 0.5s ease;
         z-index: 2;
     }
-    .sidebar.open ~ .main-panel{
+    .sidebar.open ~ .main-panel {
         left: 250px;
         width: calc(100% - 250px);
     }
-    .main-panel .text{
+    .btn-custom-orange {
+        background-color: #fd7e14; /* Oranye */
+        color: white;
+        border: none;
+    }
+    .btn-custom-orange:hover {
+        background-color: #e36209; /* Oranye lebih gelap saat hover */
+    }
+    .main-panel .text {
         display: inline-block;
         color: #11101d;
         font-size: 25px;
@@ -26,8 +34,29 @@
     .card {
         margin-top: 20px;
     }
+    .jumbotron-bg {
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        margin-right: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 60px;
+        margin-top: 25px;
+    }
 </style>
 <div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron jumbotron-bg">
+                <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+                <p id="current-date">tanggal</p> 
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -52,6 +81,8 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary mb-2 mr-2">Cari</button>
+                            <a href="{{ url('admin/laporan-cuti/riwayat-cuti') }}" class="btn btn-custom-orange mb-2">Riwayat Cuti</a>
+                            <a href="{{ url('admin/approve/cuti') }}" class="btn btn-success  mb-2">Approve Cuti</a>
                         </form>
                     </div>
                     
@@ -69,15 +100,15 @@
                             </thead>
                             <tbody>
                                 @foreach($laporanCuti as $laporan)
-    <tr>
-        <td>{{ $loop->iteration }}</td>
-        <td>{{ $laporan['nama'] ?? '' }}</td>
-        <td>{{ $laporan['tahun'] ?? '' }}</td>
-        <td>{{ $laporan['position'] ?? '' }}</td>
-        <td>{{ $laporan['terpakai'] ?? '' }}</td>
-        <td>{{ $laporan['sisa'] ?? '' }}</td>
-    </tr>
-@endforeach
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $laporan['nama'] ?? '' }}</td>
+                                    <td>{{ $laporan['tahun'] ?? '' }}</td>
+                                    <td>{{ $laporan['position'] ?? '' }}</td>
+                                    <td>{{ $laporan['terpakai'] ?? '' }}</td>
+                                    <td>{{ $laporan['sisa'] ?? '' }}</td>
+                                </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -95,6 +126,13 @@
         window.print();
         document.body.innerHTML = originalContents;
     }
+</script>
+<script>
+    // Mendapatkan elemen untuk tanggal terkini
+    const currentDateElement = document.getElementById('current-date');
+    const currentDate = new Date();
+    const dateString = currentDate.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    currentDateElement.textContent = dateString;
 </script>
 
 @endsection

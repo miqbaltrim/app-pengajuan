@@ -86,6 +86,16 @@
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>
+                                            <a href="https://wa.me/?text={{ rawurlencode(
+                                                'Notifikasi Pengajuan Cuti dari *' . $ajucuti->user->nama . "*\n" .
+                                                '--------------------------------'. "\n" .
+                                                '*Tanggal:* ' . $ajucuti->created_at->format('Y-m-d') . "\n" .
+                                                '*Mulai:* ' . $ajucuti->mulai_cuti . "\n" .
+                                                '*Selesai:* ' . $ajucuti->selesai_cuti . "\n" .
+                                                '*Alasan:* ' . substr($ajucuti->alasan, 0, 30) ."\n" .
+                                                '*Status:* ' . $ajucuti->status . "\n\n" .
+                                                'Link ke Detail: http://127.0.0.1:8000/login'
+                                            ) }}" class="btn btn-info btn-sm">Kirim ke Manager</a>
                                         @endif
                                     </td>
                                 </tr>

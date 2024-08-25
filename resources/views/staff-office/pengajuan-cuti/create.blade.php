@@ -29,6 +29,7 @@
     .card {
         margin-top: 20px;
     }
+
     .jumbotron-bg {
         background-color: #f8f9fa; /* Warna latar belakang */
         border-radius: 15px; /* Sudut bulat */
@@ -46,10 +47,10 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-          <div class="jumbotron jumbotron-bg">
-            <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
-            <p id="current-date">tanggal</p> 
-          </div>
+            <div class="jumbotron jumbotron-bg">
+                <p><strong>{{ Auth::user()->nama }} - Divisi {{ Auth::user()->position }}</strong></p>
+                <p id="current-date">tanggal</p> 
+            </div>
         </div>
     </div>
     
@@ -94,8 +95,11 @@
         </div>
     </div>
 </div>
-<!-- JavaScript untuk menampilkan popup -->
+
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JavaScript untuk menampilkan popup -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const cutiForm = document.getElementById('cutiForm');
@@ -113,8 +117,18 @@
                 });
             }
         });
+
+        // Cek session flash message untuk pesan error
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Cuti Ditolak',
+                text: '{{ session('error') }}',
+                confirmButtonText: 'OK'
+            });
+        @endif
     });
-    
+
     // Menampilkan tanggal terkini
     const currentDateElement = document.getElementById('current-date');
     const currentDate = new Date();

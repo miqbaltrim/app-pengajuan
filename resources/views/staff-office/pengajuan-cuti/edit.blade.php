@@ -75,6 +75,14 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Update Pengajuan Cuti</button>
                     </form>
+
+                    @if ($ajucuti->status == 'ditolak')
+                        <form action="{{ route('staff-office.pengajuan-cuti.resubmit', $ajucuti->id) }}" method="POST" class="mt-3">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="btn btn-warning">Ajukan Kembali</button>
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-@extends('layouts.area-manager')
+@extends('layouts.manager-operasional')
 
 @section('content')
 <style>
@@ -98,8 +98,8 @@
                                     <td>{{ 'Rp ' . number_format($totalPengajuan, 0, ',', '.') }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Total Pengajuan:</th>
-                                    <td>{{ 'Rp ' . number_format($totalPengajuan, 0, ',', '.') }}</td>
+                                    <th>Alasan:</th>
+                                    <td>{{ $pengajuan->alasan }}</td>
                                 </tr>
                                 <tr>
                                     <th>Disetujui Oleh:</th>

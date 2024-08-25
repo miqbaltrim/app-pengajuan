@@ -89,8 +89,15 @@
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative; /* Posisi relatif untuk titik merah */
   }
   
+  .social-feed-item:hover {
+    background-color: #f0f0f0; /* Ubah warna latar belakang saat di hover */
+  }
+
   .social-feed-user {
     display: flex;
     align-items: center;
@@ -143,6 +150,16 @@
     background-color: rgb(255, 180, 0); /* Perbesar warna orange */
     color: white;
     border-radius: 15px; /* Memperbesar sudut */
+  }
+
+  .dot {
+    height: 10px;
+    width: 10px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 10px;
+    right: 10px;
   }
 
   /* CSS Pengumumaman */
@@ -317,15 +334,37 @@
         
         <div class="grid-item">
             <!-- Grid sebelah kiri 2 -->
-            <h3 class="fixed-title">Notifikasi Pengajuan Barang</h3>
+            <h3 class="fixed-title">Notifikasi Pengajuan</h3>
             <div class="social-feed">
                 @foreach($notifikasiPengajuan as $notifikasi)
-                <div class="social-feed-item">
-                    <!-- Menampilkan nomor referensi -->
-                    <p>Nomor Referensi: {{ $notifikasi->nomor_referensi }}</p>
-                    
-                    <!-- Tombol unduh surat -->
-                    <a href="{{ route('staff-office.download-surat', $notifikasi->id) }}" class="btn btn-primary">Download Surat</a>
+                <div class="social-feed-item" 
+                     data-url="
+                        @if($notifikasi instanceof App\Models\Ajucuti)
+                            {{ route('staff-office.pengajuan-cuti.index') }}
+                        @elseif($notifikasi instanceof App\Models\Izin)
+                            {{ route('staff-office.pengajuan-izin.index') }}
+                        @elseif($notifikasi instanceof App\Models\Sakit)
+                            {{ route('staff-office.pengajuan-sakit.index') }}
+                        @elseif($notifikasi instanceof App\Models\Kasbon)
+                            {{ route('staff-office.pengajuan-kasbon.index') }}
+                        @elseif($notifikasi instanceof App\Models\Pengajuan)
+                            {{ route('staff-office.pengajuan-barang.index') }}
+                        @endif
+                     " 
+                     data-id="{{ $notifikasi->id }}"
+                >
+                    @if($notifikasi instanceof App\Models\Ajucuti)
+                        <p>Pengajuan Cuti anda sudah di-approve</p>
+                    @elseif($notifikasi instanceof App\Models\Izin)
+                        <p>Pengajuan Izin anda sudah di-approve</p>
+                    @elseif($notifikasi instanceof App\Models\Sakit)
+                        <p>Pengajuan Sakit anda sudah di-approve</p>
+                    @elseif($notifikasi instanceof App\Models\Kasbon)
+                        <p>Pengajuan Kasbon anda sudah di-approve</p>
+                    @elseif($notifikasi instanceof App\Models\Pengajuan)
+                        <p>Pengajuan Barang anda sudah di-approve</p>
+                    @endif
+                    <div class="dot" id="dot-{{ $notifikasi->id }}"></div>
                 </div>
                 @endforeach
             </div>
@@ -379,6 +418,21 @@
               statusClass = 'tunggu';
           }
           element.classList.add(statusClass);
+      });
+
+      // Menambahkan event listener untuk mengarahkan ke URL dan menghilangkan titik merah
+      const items = document.querySelectorAll('.social-feed-item');
+      items.forEach(function(item) {
+          const id = item.getAttribute('data-id');
+          if (localStorage.getItem(`notifikasi-${id}`)) {
+              item.querySelector('.dot').style.display = 'none';
+          }
+
+          item.addEventListener('click', function() {
+              window.location.href = item.getAttribute('data-url');
+              localStorage.setItem(`notifikasi-${id}`, 'true');
+              item.querySelector('.dot').style.display = 'none';
+          });
       });
   });
 </script>

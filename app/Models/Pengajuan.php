@@ -15,6 +15,7 @@ class Pengajuan extends Model
         'diketahui_oleh',
         'setujui',
         'ketahui',
+        'alasan', 
     ];
 
     public function dibuatOleh()

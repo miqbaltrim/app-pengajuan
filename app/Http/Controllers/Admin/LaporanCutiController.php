@@ -12,106 +12,99 @@ use Carbon\Carbon;
 class LaporanCutiController extends BaseController
 {
     public function index()
-    {
-        // Retrieve all users
-        $users = User::all();
+{
+    $users = User::all();
+    $laporanCuti = [];
 
-        // Initialize arrays to store aggregated data
-        $laporanCuti = [];
+    foreach ($users as $user) {
+        $ajucutis = Ajucuti::where('id_user', $user->id)->get();
 
-        // Iterate over each user
-        foreach ($users as $user) {
-            // Calculate total terpakai and sisa for each user
-            $ajucutis = Ajucuti::where('id_user', $user->id)->get();
-
-            $terpakai = 0;
-            foreach ($ajucutis as $ajucuti) {
-                $mulaiCuti = Carbon::parse($ajucuti->mulai_cuti);
-                $akhirCuti = Carbon::parse($ajucuti->selesai_cuti);
-                $terpakai += $mulaiCuti->diffInDays($akhirCuti) + 1; // Tambah 1 karena termasuk hari terakhir
-            }
-
-            // Calculate total sisa cuti
-            $sisa = $user->jml_cuti - $terpakai;
-
-            // Store aggregated data for each user
-            $laporanCuti[] = [
-                'nama' => $user->nama,
-                'tahun' => Carbon::now()->year, // You can change this if needed
-                'position' => $user->position,
-                'terpakai' => $terpakai,
-                'sisa' => $sisa
-            ];
+        $terpakai = 0;
+        foreach ($ajucutis as $ajucuti) {
+            $mulaiCuti = Carbon::parse($ajucuti->mulai_cuti);
+            $akhirCuti = Carbon::parse($ajucuti->selesai_cuti);
+            $terpakai += $mulaiCuti->diffInDays($akhirCuti) + 1;
         }
 
-        // Pass the aggregated data to the view
-        return view('admin.laporan-cuti.index', compact('laporanCuti'));
+        $sisa = 12 - $terpakai;
+        $sisa = $sisa < 0 ? 0 : $sisa; // Ensure the remaining leave is not negative
+
+        $laporanCuti[$user->id] = [
+            'nama' => $user->nama,
+            'tahun' => Carbon::now()->year,
+            'position' => $user->position,
+            'terpakai' => $terpakai,
+            'sisa' => $sisa
+        ];
     }
 
+    return view('admin.laporan-cuti.index', ['laporanCuti' => array_values($laporanCuti)]);
+}
 
 public function search(Request $request)
 {
     $nama = $request->nama;
     $tahun = $request->tahun;
 
-    $query = Ajucuti::query();
+    $query = User::query();
 
-    // Jika ada nama yang dimasukkan, tambahkan kondisi pencarian berdasarkan nama
     if ($nama) {
-        $query->whereHas('user', function ($userQuery) use ($nama) {
-            $userQuery->where('nama', 'like', '%' . $nama . '%');
-        });
+        $query->where('nama', 'like', '%' . $nama . '%');
     }
 
-    // Jika ada tahun yang dimasukkan, tambahkan kondisi pencarian berdasarkan tahun
-    if ($tahun) {
-        $query->whereYear('mulai_cuti', $tahun);
-    }
-
-    // Eksekusi query dan ambil hasil
-    $ajucutis = $query->get();
-
-    // Menghitung jumlah hari terpakai dan sisa cuti
-    $totalCuti = User::sum('jml_cuti'); // Mengambil total cuti dari database jml_cuti
-    foreach ($ajucutis as $ajucuti) {
-        $mulaiCuti = Carbon::parse($ajucuti->mulai_cuti);
-        $selesaiCuti = Carbon::parse($ajucuti->selesai_cuti);
-        $hariCuti = $selesaiCuti->diffInDays($mulaiCuti) + 1; // Tambah 1 karena termasuk hari terakhir
-
-        // Mengurangi jumlah cuti yang diambil dari total cuti
-        $totalCuti -= $hariCuti;
-    }
-
-    // Initialize $laporanCuti array
+    $users = $query->get();
     $laporanCuti = [];
 
-    // If searching by year and there are no results, set $laporanCuti to an empty array
-    if ($tahun && $ajucutis->isEmpty()) {
-        return view('admin.laporan-cuti.index', compact('ajucutis', 'nama', 'tahun', 'totalCuti', 'laporanCuti'));
-    }
+    foreach ($users as $user) {
+        $ajucutis = Ajucuti::where('id_user', $user->id);
 
-    // If not searching by year or there are search results, continue with normal data processing
-    foreach ($ajucutis as $ajucuti) {
-        $mulaiCuti = Carbon::parse($ajucuti->mulai_cuti);
-        $akhirCuti = Carbon::parse($ajucuti->selesai_cuti);
+        if ($tahun) {
+            $ajucutis->whereYear('mulai_cuti', $tahun);
+        }
 
-        $tahun = $mulaiCuti->format('Y');
-        $terpakai = $mulaiCuti->diffInDays($akhirCuti) + 1;
-        $sisaCuti = 12 - $terpakai;
+        $ajucutis = $ajucutis->get();
+        $terpakai = 0;
 
-        $laporanCuti[] = [
-            'nama' => $ajucuti->user->nama,
-            'tahun' => $tahun,
-            'position' => $ajucuti->user->position,
+        foreach ($ajucutis as $ajucuti) {
+            $mulaiCuti = Carbon::parse($ajucuti->mulai_cuti);
+            $akhirCuti = Carbon::parse($ajucuti->selesai_cuti);
+            $terpakai += $mulaiCuti->diffInDays($akhirCuti) + 1;
+        }
+
+        $sisa = 12 - $terpakai;
+        $sisa = $sisa < 0 ? 0 : $sisa; // Ensure the remaining leave is not negative
+
+        $laporanCuti[$user->id] = [
+            'nama' => $user->nama,
+            'tahun' => $tahun ?? Carbon::now()->year,
+            'position' => $user->position,
             'terpakai' => $terpakai,
-            'sisa' => $sisaCuti
+            'sisa' => $sisa
         ];
     }
 
-    // Mengirim hasil pencarian ke view beserta jumlah hari terpakai dan sisa cuti
-    return view('admin.laporan-cuti.index', compact('ajucutis', 'nama', 'tahun', 'totalCuti', 'laporanCuti'));
+    return view('admin.laporan-cuti.index', ['laporanCuti' => array_values($laporanCuti)]);
 }
 
+public function searchByMonth(Request $request)
+    {
+        $tahun = $request->input('tahun');
+        $bulan = $request->input('bulan');
+
+        $query = Ajucuti::with('user');
+
+        if ($tahun) {
+            $query->whereYear('mulai_cuti', $tahun);
+        }
+
+        if ($bulan) {
+            $query->whereMonth('mulai_cuti', $bulan);
+        }
+
+        $riwayatCuti = $query->orderBy('mulai_cuti', 'desc')->get();
+
+        return view('admin.laporan-cuti.riwayat-cuti', compact('riwayatCuti'));
+    }
 
 public function reset()
 {
@@ -141,5 +134,14 @@ public function reset()
     return redirect()->route('admin.laporan-cuti.index')->with('success', 'Jumlah cuti untuk tahun selanjutnya berhasil direset.');
 }
 
+public function riwayatCuti()
+    {
+        $riwayatCuti = Ajucuti::with('user')
+            ->where('approved', '!=', null)
+            ->orderBy('mulai_cuti', 'desc')
+            ->get();
+
+        return view('admin.laporan-cuti.riwayat-cuti', compact('riwayatCuti'));
+    }
 
 }

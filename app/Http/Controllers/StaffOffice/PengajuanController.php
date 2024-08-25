@@ -27,28 +27,72 @@ class PengajuanController extends Controller
 {
     // Dapatkan pengguna yang sedang login
     $user = Auth::user();
-
-    // Ambil hanya data pengajuan barang yang dibuat oleh pengguna yang sedang login
     $pengajuans = $user->pengajuans()->paginate(10);
-
-    // Kirim data pengajuan yang telah difilter ke tampilan
+    
     return view('staff-office.pengajuan-barang.index', compact('pengajuans'));
 }
 
     public function notifikasiPengajuan()
 {
-    // Ambil data pengajuan yang statusnya sudah disetujui dan diketahui
     $notifikasiPengajuan = Pengajuan::where('setujui', 'diterima')
                                     ->where('ketahui', 'diterima')
                                     ->get();
 
-    // Kirim data ke view
     return view('staff-office.notifikasi-pengajuan', compact('notifikasiPengajuan'));
 }
 
-
     public function create()
     {
+        $lastReferenceNumber = Pengajuan::latest()->value('nomor_referensi');
+        $lastNumber = 0;
+        if ($lastReferenceNumber) {
+            $lastNumber = explode('-', $lastReferenceNumber)[1];
+        }
+        $nextNumber = intval($lastNumber) + 1;
+        $nextReferenceNumber = 'pengajuan-' . $nextNumber;
+
+        return view('staff-office.pengajuan-barang.create', compact('nextReferenceNumber'));
+    }
+
+    public function store(Request $request)
+{
+    // Validasi input
+    $request->validate([
+        'nama_barang.*' => 'required',
+        'qty.*' => 'required|integer',
+        'harga_satuan.*' => 'required|numeric',
+        'total.*' => 'required|numeric',
+        'disetujui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
+        'diketahui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
+        'alasan' => 'required|string',
+    ]);
+
+    // Dapatkan pengguna yang sedang login
+    $user = Auth::user();
+
+    // Pastikan pengguna telah login sebelum melanjutkan
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Anda harus login untuk membuat pengajuan.');
+    }
+
+    // Mulai transaksi database
+    DB::beginTransaction();
+
+    try {
+        // Temukan ID pengguna berdasarkan peran yang dipilih untuk disetujui oleh pengguna
+        $disetujuiOlehUser = User::where('role', $request->disetujui_oleh)->firstOrFail();
+        
+        // Jika peran yang dipilih sama dengan peran pengguna yang sedang login, gunakan pengguna yang sedang login sebagai yang menyetujui
+        if ($user->role == $request->disetujui_oleh) {
+            $penggunaSetuju = $user;
+        } else {
+            // Temukan pengguna yang memiliki peran yang sama dengan yang dipilih sebagai disetujui
+            $penggunaSetuju = User::where('role', $request->disetujui_oleh)->firstOrFail();
+        }
+
+        // Temukan ID pengguna berdasarkan peran yang dipilih untuk diketahui oleh pengguna
+        $diketahuiOlehUser = User::where('role', $request->diketahui_oleh)->firstOrFail();
+
         // Ambil nilai terakhir dari nomor referensi
         $lastReferenceNumber = Pengajuan::latest()->value('nomor_referensi');
 
@@ -66,97 +110,38 @@ class PengajuanController extends Controller
         // Buat nomor referensi baru
         $nextReferenceNumber = 'pengajuan-' . $nextNumber;
 
-        return view('staff-office.pengajuan-barang.create', compact('nextReferenceNumber'));
+        // Simpan data ke tabel pengajuans
+        $pengajuan = new Pengajuan();
+        $pengajuan->nomor_referensi = $nextReferenceNumber;
+        $pengajuan->dibuat_oleh = $user->id;
+        $pengajuan->disetujui_oleh = $disetujuiOlehUser->id;
+        $pengajuan->diketahui_oleh = $diketahuiOlehUser->id;
+        $pengajuan->setujui = "tunggu";
+        $pengajuan->ketahui = "tunggu";
+        $pengajuan->alasan = $request->alasan;
+        $pengajuan->save();
+
+        // Simpan data ke tabel barangs dengan menetapkan pengajuan_id
+        foreach ($request->nama_barang as $key => $nama_barang) {
+            $barang = new Barang();
+            $barang->nama_barang = $nama_barang;
+            $barang->qty = $request->qty[$key];
+            $barang->harga_satuan = $request->harga_satuan[$key];
+            $barang->total = $request->total[$key];
+            $barang->pengajuan_id = $pengajuan->id; // Tetapkan pengajuan_id yang baru saja dibuat
+            $barang->save();
+        }
+
+        // Commit transaksi database
+        DB::commit();
+
+        return redirect()->route('staff-office.pengajuan-barang.index')->with('success', 'Pengajuan berhasil ditambahkan.');
+    } catch (\Exception $e) {
+        // Rollback transaksi jika terjadi kesalahan
+        DB::rollback();
+        return redirect()->back()->with('error', 'Terjadi kesalahan. Pengajuan gagal disimpan.');
     }
-
-    public function store(Request $request)
-    {
-        // Validasi input
-        $request->validate([
-            'nama_barang.*' => 'required',
-            'qty.*' => 'required|integer',
-            'harga_satuan.*' => 'required|numeric',
-            'total.*' => 'required|numeric',
-            'disetujui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
-            'diketahui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
-        ]);
-
-        // Dapatkan pengguna yang sedang login
-        $user = Auth::user();
-
-        // Pastikan pengguna telah login sebelum melanjutkan
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Anda harus login untuk membuat pengajuan.');
-        }
-
-        // Mulai transaksi database
-        DB::beginTransaction();
-
-        try {
-            // Temukan ID pengguna berdasarkan peran yang dipilih untuk disetujui oleh pengguna
-        $disetujuiOlehUser = User::where('role', $request->disetujui_oleh)->firstOrFail();
-        
-        // Jika peran yang dipilih sama dengan peran pengguna yang sedang login, gunakan pengguna yang sedang login sebagai yang menyetujui
-        if ($user->role == $request->disetujui_oleh) {
-            $penggunaSetuju = $user;
-        } else {
-            // Temukan pengguna yang memiliki peran yang sama dengan yang dipilih sebagai disetujui
-            $penggunaSetuju = User::where('role', $request->disetujui_oleh)->firstOrFail();
-        }
-
-        // Temukan ID pengguna berdasarkan peran yang dipilih untuk diketahui oleh pengguna
-        $diketahuiOlehUser = User::where('role', $request->diketahui_oleh)->firstOrFail();
-
-
-            // Ambil nilai terakhir dari nomor referensi
-            $lastReferenceNumber = Pengajuan::latest()->value('nomor_referensi');
-
-            // Inisialisasi $lastNumber dengan nilai default jika $lastReferenceNumber tidak ada
-            $lastNumber = 0;
-
-            // Pisahkan kata "pengajuan-" dari nomor referensi terakhir jika $lastReferenceNumber ada
-            if ($lastReferenceNumber) {
-                $lastNumber = explode('-', $lastReferenceNumber)[1];
-            }
-
-            // Tambahkan 1 ke nomor referensi terakhir
-            $nextNumber = intval($lastNumber) + 1;
-
-            // Buat nomor referensi baru
-            $nextReferenceNumber = 'pengajuan-' . $nextNumber;
-
-            // Simpan data ke tabel pengajuans
-            $pengajuan = new Pengajuan();
-            $pengajuan->nomor_referensi = $nextReferenceNumber;
-            $pengajuan->dibuat_oleh = $user->id;
-            $pengajuan->disetujui_oleh = $disetujuiOlehUser->id;
-            $pengajuan->diketahui_oleh = $diketahuiOlehUser->id;
-            $pengajuan->setujui = "tunggu";
-            $pengajuan->ketahui = "tunggu";
-            $pengajuan->save();
-
-            // Simpan data ke tabel barangs dengan menetapkan pengajuan_id
-            foreach ($request->nama_barang as $key => $nama_barang) {
-                $barang = new Barang();
-                $barang->nama_barang = $nama_barang;
-                $barang->qty = $request->qty[$key];
-                $barang->harga_satuan = $request->harga_satuan[$key];
-                $barang->total = $request->total[$key];
-                $barang->pengajuan_id = $pengajuan->id; // Tetapkan pengajuan_id yang baru saja dibuat
-                $barang->save();
-            }
-
-            // Commit transaksi database
-            DB::commit();
-
-            return redirect()->route('staff-office.pengajuan-barang.index')->with('success', 'Pengajuan berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            // Rollback transaksi jika terjadi kesalahan
-            DB::rollback();
-            return redirect()->back()->with('error', 'Terjadi kesalahan. Pengajuan gagal disimpan.');
-        }
-    }
-
+}
     public function user()
     {
         return $this->belongsTo(User::class, 'dibuat_oleh');
@@ -179,6 +164,7 @@ class PengajuanController extends Controller
         'total.*' => 'required|numeric',
         'disetujui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
         'diketahui_oleh' => 'required|in:direktur,manager-operasional,manager-territory,manager-keuangan,area-manager,kepala-cabang,kepala-gudang',
+        'alasan' => 'required|string',
     ]);
 
     // Mulai transaksi database
@@ -200,6 +186,7 @@ class PengajuanController extends Controller
         $pengajuan->diketahui_oleh = $diketahuiOlehUser->id;
         $pengajuan->setujui = "tunggu";
         $pengajuan->ketahui = "tunggu";
+        $pengajuan->alasan = $request->alasan;
         $pengajuan->save();
 
         // Hapus semua barang terkait pengajuan yang lama
@@ -272,6 +259,7 @@ class PengajuanController extends Controller
     // Mengisi placeholder dengan data pengajuan barang
     $templateProcessor->setValue('NomorReferensi', $pengajuan->nomor_referensi);
     $templateProcessor->setValue('DibuatOleh', $pengajuan->dibuatOleh->nama ?? 'User Tidak Ditemukan');
+    $templateProcessor->setValue('Alasan', $pengajuan->alasan);
 
     // Menggabungkan nama dan peran untuk disetujui oleh dan diketahui oleh
     $disetujuiOleh = $pengajuan->disetujuiOleh->nama;
@@ -349,7 +337,26 @@ class PengajuanController extends Controller
     }
 }
 
+public function uploadNota(Request $request, $id)
+{
+    // Validasi file yang diunggah, harus berformat PDF dengan ukuran maksimal 2MB
+    $request->validate([
+        'bukti_nota' => 'required|mimes:pdf|max:2048',
+    ]);
 
+    // Temukan pengajuan berdasarkan ID
+    $pengajuan = Pengajuan::findOrFail($id);
+
+    // Simpan file PDF ke dalam direktori 'bukti_notas' di penyimpanan publik
+    $filePath = $request->file('bukti_nota')->store('bukti_notas', 'public');
+
+    // Perbarui kolom 'bukti_nota' di tabel pengajuans dengan path file yang diunggah
+    $pengajuan->bukti_nota = $filePath;
+    $pengajuan->save();
+
+    // Kembalikan respon dengan pesan sukses
+    return redirect()->route('staff-office.pengajuan-barang.index')->with('success', 'Bukti nota berhasil diunggah.');
+}
 
 
 

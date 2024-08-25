@@ -61,12 +61,13 @@
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
+                                    <th>Tanggal Kasbon</th>
                                     <th>Keterangan</th>
                                     <th>Jumlah Kasbon</th>
-                                    <th>Disetujui</th>
-                                    <th>Diketahui</th>
+                                    <th>Sisa Cicilan</th> <!-- Kolom baru untuk sisa cicilan -->
                                     <th>Status Setujui</th>
                                     <th>Status Ketahui</th>
+                                    <th>Status Cicilan</th> <!-- Kolom baru untuk status cicilan -->
                                     <th>Aksi</th> <!-- Kolom untuk tombol edit dan delete -->
                                 </tr>
                             </thead>
@@ -74,13 +75,14 @@
                                 @foreach($kasbons as $kasbon)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ optional($kasbon->user)->nama }}</td> <!-- Menampilkan nama pengguna yang membuat kasbon -->
+                                        <td>{{ optional($kasbon->user)->nama }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($kasbon->created_at)->format('Y-m-d') }}</td>
                                         <td>{{ $kasbon->keterangan }}</td>
                                         <td>{{ number_format($kasbon->jml_kasbon, 0, ',', '.') }}</td>
-                                        <td>{{ optional($kasbon->disetujuiOleh)->role ?? 'User Tidak Ditemukan' }}</td>
-                                        <td>{{ optional($kasbon->diketahuiOleh)->role ?? 'User Tidak Ditemukan' }}</td>
+                                        <td>{{ number_format($kasbon->sisa_cicilan, 0, ',', '.') }}</td> <!-- Penambahan kolom sisa cicilan -->
                                         <td>{{ $kasbon->setujui }}</td>
                                         <td>{{ $kasbon->ketahui }}</td>
+                                        <td>{{ $kasbon->status_cicilan }}</td> <!-- Penambahan kolom status cicilan -->
                                         <td>
                                             @if($kasbon->setujui == 'diterima' && $kasbon->ketahui == 'diterima')
                                                 <a href="{{ route('staff-office.pengajuan-kasbon.download', $kasbon->id) }}" class="btn btn-success btn-sm">Download</a>

@@ -32,7 +32,7 @@
                     <h5 class="card-title">Edit Kasbon</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('staff-office.pengajuan-kasbon.update', $kasbon->id) }}" method="POST">
+                    <form id="editKasbonForm" action="{{ route('staff-office.pengajuan-kasbon.update', $kasbon->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
@@ -76,4 +76,41 @@
         </div>
     </div>
 </div>
+<!-- Menyertakan SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const gaji = {{ auth()->user()->gaji->gaji ?? 0 }};
+    const totalKasbon = {{ $totalKasbon ?? 0 }};
+    const form = document.getElementById('kasbon-form');
+    const jmlKasbonInput = document.getElementById('jml_kasbon');
+
+    form.addEventListener('submit', function (e) {
+        const jmlKasbon = parseFloat(jmlKasbonInput.value);
+
+        if (jmlKasbon + totalKasbon > gaji) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Jumlah total kasbon tidak boleh melebihi gaji.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        } else if (jmlKasbon === gaji) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Maaf, pengajuan tidak boleh sama dengan gaji Anda.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+});
+
+</script>
 @endsection
